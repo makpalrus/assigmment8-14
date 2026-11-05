@@ -4,10 +4,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    public float moveSpeed { get { return LevelLoader.ActiveData.playerStats.moveSpeed; } }
-    public float jumpForce { get { return LevelLoader.ActiveData.playerStats.jumpForce; } }
+    public PlayerStats stats;
     public Transform groundCheck;
-    public float groundCheckRadius { get { return LevelLoader.ActiveData.playerStats.groundCheckRadius; } }
     public LayerMask groundLayer;
     Rigidbody2D rb;
     Animator animator;
@@ -31,10 +29,17 @@ public class Player : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
-        if (value.isPressed && Time.timeScale > 0 && (!MobileGameUI.Instance || MobileGameUI.Instance.IsPlaying))
+        if (value.isPressed && Time.timeScale > 0 && (!GameUI.Instance || GameUI.Instance.IsPlaying))
             jumpQueued = true;
     }
 
+    public void OnPause(InputValue value)
+    {
+        GameUI ui = GameUI.Instance;
+        if (!value.isPressed || ui.gameOver.activeSelf) return;
+        if (ui.IsPlaying) ui.Pause();
+        else ui.Resume();
+    }
     void OnDisable()
     {
         horizontal = 0;
@@ -45,7 +50,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0 || (MobileGameUI.Instance && !MobileGameUI.Instance.IsPlaying)) return;
+        if (Time.timeScale == 0 || (GameUI.Instance && !GameUI.Instance.IsPlaying)) return;
         if (sprite && Mathf.Abs(horizontal) > 0.01f)
             sprite.flipX = horizontal < 0;
 
@@ -58,21 +63,23 @@ public class Player : MonoBehaviour
     {
         Collider2D ground = null;
         if (groundCheck)
-            ground = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+            ground = Physics2D.OverlapCircle(groundCheck.position, stats.groundCheckRadius, groundLayer);
 
+        bool wasGrounded = isGrounded;
         isGrounded = ground;
+        if (!wasGrounded && isGrounded && rb.linearVelocity.y < -1f)
+            GameAudio.Instance.PlayLand();
         float platformSpeed = 0f;
         if (ground && ground.TryGetComponent(out MovingPlatform platform))
             platformSpeed = platform.HorizontalVelocity;
 
-        rb.linearVelocity = new Vector2(horizontal * moveSpeed + platformSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(horizontal * stats.moveSpeed + platformSpeed, rb.linearVelocity.y);
         if (jumpQueued && isGrounded)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, stats.jumpForce);
             isGrounded = false;
-            GameAudio.Play(GameSound.Jump);
+            GameAudio.Instance.PlayJump();
         }
         jumpQueued = false;
     }
 }
-

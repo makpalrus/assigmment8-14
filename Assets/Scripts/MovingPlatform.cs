@@ -4,9 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public sealed class MovingPlatform : MonoBehaviour
 {
-    public float travel { get { return LevelLoader.ActiveData.itemStats.platformTravel; } }
-    public float speed { get { return LevelLoader.ActiveData.itemStats.platformSpeed; } }
 
+    public ItemStats stats;
     Rigidbody2D body;
     Vector2 center;
     int direction = 1;
@@ -15,16 +14,15 @@ public sealed class MovingPlatform : MonoBehaviour
 
     void Awake()
     {
-        body = gameObject.AddComponent<Rigidbody2D>();
-        body.bodyType = RigidbodyType2D.Kinematic;
+        body = GetComponent<Rigidbody2D>();
         center = body.position;
     }
 
     void FixedUpdate()
     {
         Vector2 current = body.position;
-        float edge = center.x + direction * travel;
-        float next = Mathf.MoveTowards(current.x, edge, speed * Time.fixedDeltaTime);
+        float edge = center.x + direction * stats.platformTravel;
+        float next = Mathf.MoveTowards(current.x, edge, stats.platformSpeed * Time.fixedDeltaTime);
         HorizontalVelocity = (next - current.x) / Time.fixedDeltaTime;
         body.MovePosition(new Vector2(next, center.y));
         if (next == edge) direction = -direction;

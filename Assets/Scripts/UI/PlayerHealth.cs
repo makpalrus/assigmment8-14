@@ -1,22 +1,25 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Player))]
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHearts { get { return LevelLoader.ActiveData.playerStats.maxHearts; } }
-    public float fallY { get { return LevelLoader.ActiveData.playerStats.fallY; } }
+    public PlayerStats stats;
     public int Hearts { get; private set; }
+    bool invincible;
     Vector3 spawn;
-    float nextDamage;
     SpriteRenderer picture;
-    Coroutine blink;
+    Player player;
+    Rigidbody2D body;
+
     void Awake()
     {
-        Hearts = maxHearts;
+        Hearts = stats.maxHearts;
         spawn = transform.position;
         picture = GetComponent<SpriteRenderer>();
+        player = GetComponent<Player>();
+        body = GetComponent<Rigidbody2D>();
     }
+
     public void SetSpawn(Vector3 position)
     {
         spawn = position;
@@ -24,74 +27,80 @@ public class PlayerHealth : MonoBehaviour
 
     void Update()
     {
-        if (MobileGameUI.Instance && MobileGameUI.Instance.IsPlaying && transform.position.y < fallY) TakeDamage(LevelLoader.ActiveData.playerStats.hazardDamage);
+        if (GameUI.Instance.IsPlaying && transform.position.y < stats.fallY)
+            TakeDamage(stats.hazardDamage);
     }
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        TouchHazard(collision.collider);
-    }
+
     void OnCollisionStay2D(Collision2D collision)
     {
         TouchHazard(collision.collider);
     }
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        TouchHazard(other);
-    }
+
     void OnTriggerStay2D(Collider2D other)
     {
         TouchHazard(other);
     }
+
     void TouchHazard(Collider2D other)
     {
-        for (Transform part = other.transform; part; part = part.parent)
+        Transform part = other.transform;
+        while (part != null)
+        {
             if (part.CompareTag("Damage"))
             {
-                TakeDamage(LevelLoader.ActiveData.playerStats.hazardDamage);
+                TakeDamage(stats.hazardDamage);
                 return;
             }
+            part = part.parent;
+        }
     }
+
     public bool Heal(int amount)
     {
-        if (amount <= 0 || Hearts <= 0 || Hearts >= maxHearts)
-            return false;
-
-        Hearts = Mathf.Min(maxHearts, Hearts + amount);
-        MobileGameUI.Instance.RefreshHearts(Hearts);
+        if (Hearts <= 0 || Hearts >= stats.maxHearts) return false;
+        Hearts = Mathf.Min(stats.maxHearts, Hearts + amount);
+        GameUI.Instance.RefreshHearts(Hearts);
         return true;
     }
 
     public void TakeDamage(int amount)
     {
-        if (amount <= 0 || Time.time < nextDamage || !MobileGameUI.Instance || !MobileGameUI.Instance.IsPlaying) return;
-        if (blink != null) StopCoroutine(blink);
-        blink = null;
-        if (picture) picture.enabled = true;
+        if (invincible || Hearts <= 0 || !GameUI.Instance.IsPlaying) return;
         Hearts = Mathf.Max(0, Hearts - amount);
-        if (Hearts > 0) GameAudio.Play(GameSound.Hurt);
-        nextDamage = Time.time + LevelLoader.ActiveData.playerStats.invincibilityTime;
-        MobileGameUI.Instance.RefreshHearts(Hearts);
-        GetComponent<Player>().ClearInput();
-        GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+        GameUI.Instance.RefreshHearts(Hearts);
+        player.ClearInput();
+        body.linearVelocity = Vector2.zero;
         transform.position = spawn;
-        if (Hearts == 0) MobileGameUI.Instance.ShowGameOver();
-        else if (picture) blink = StartCoroutine(BlinkAfterHit());
+        if (Hearts == 0)
+        {
+            GameAudio.Instance.PlayDeath();
+            GameUI.Instance.ShowGameOver();
+        }
+        else
+        {
+            GameAudio.Instance.PlayHurt();
+            StartCoroutine(BlinkAfterHit());
+        }
     }
+
     IEnumerator BlinkAfterHit()
     {
-        while (Time.time < nextDamage)
+        invincible = true;
+        float timer = 0f;
+        while (timer < stats.invincibilityTime)
         {
             picture.enabled = !picture.enabled;
-            yield return new WaitForSeconds(LevelLoader.ActiveData.playerStats.blinkInterval);
+            yield return new WaitForSeconds(stats.blinkInterval);
+            timer += stats.blinkInterval;
         }
         picture.enabled = true;
-        blink = null;
+        invincible = false;
     }
+
     void OnDisable()
     {
-        if (blink != null) StopCoroutine(blink);
-        blink = null;
+        StopAllCoroutines();
+        invincible = false;
         if (picture) picture.enabled = true;
     }
 }
-
