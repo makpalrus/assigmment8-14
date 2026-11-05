@@ -53,40 +53,10 @@ Visual assets come from the supplied Simple 2D Platformer BE2 pack. The interfac
 
 Music and sound effects are procedurally synthesized WAV files created with Codex assistance.
 
-### Sound Pass (Assignment 12)
+## Mobile interface
 
-`Assets/Resources/Audio/GameMix.mixer` routes Master → Music → Tracks, Master → SFX and Master → UI. Normal uses 0 dB / 22000 Hz on Tracks. Paused uses -6 dB / 800 Hz, with a 0.3 second transition in unscaled time. Master, Music and SFX sliders use `20 * Log10(Max(value, 0.0001))` and save to the Assignment 11 JSON settings.
-
-GameAudio persists across scene loads. Two looping sources crossfade menu.wav and level.wav over one second. All three levels use the same level track, so Retry and level transitions keep the music playing. Effects use PlayOneShot with pitch variation from 0.92 to 1.08. SfxPlayer selects one of three damage clips without immediate repeats. Music and UI remain audible on pause, gameplay effects pause.
-
-| File | Event | Source | License |
-|---|---|---|---|
-| menu.wav | Menu music | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| level.wav | Gameplay music | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| jump.wav | Jump | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| coin.wav | Coin pickup | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| hurt.wav | Damage | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| hurt_2.wav, hurt_3.wav | Alternative damage clips | Variations of original hurt.wav, Documentation/generate-audio.cjs | Original project audio, no third-party samples or license requirements |
-| click.wav | UI click | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| unlock.wav | All coins collected | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| win.wav | Victory / level finish | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| lose.wav | Defeat | Original procedural synthesis for Skybound with Codex assistance | Original project audio, no third-party samples or license requirements |
-| land.wav | Landing | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| heal.wav | Heart pickup | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| death.wav | Player death | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| patrolwarning.wav | Patroller wind-up | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| shooterwarning.wav | Shooter wind-up | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| chargerwarning.wav | Charger wind-up | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| strike.wav | Patroller strike | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| shoot.wav | Shooter projectile | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-| dash.wav | Charger dash | Documentation/generate-audio.cjs, original synthesis | Original project audio, no third-party samples or license requirements |
-
-These sounds are generated from oscillators and deterministic noise, not downloaded or copied from recordings. No external attribution is required. SFX are mono / ADPCM / Decompress On Load. Music uses Vorbis / Streaming. Listen on the target phone before submission. Phone restart proof and the student's English voice recording must be captured on the actual device.
-
-## Development status
-
-Lecture alignment: `Documentation/Lecture-project-audit.txt` lists matched techniques, corrected differences and the parts that are adaptations rather than literal lecture code. The sources contain partial examples, not a complete Skybound project. Best score now counts points. Level selection uses saved unlocks. Enemy debug labels use 3D TextMesh Pro and are hidden in release builds.
-
-Implemented systems include three data-driven levels, enemy state machines, coin collection, finish gates, health, mobile controls, menus, audio and safe JSON saves.
-
-Unity checks cover level loading, live balance, coin and gate events, progress unlocks and save recovery. Full app restart on a physical phone remains to be verified.
+- Main menu: press Play to choose a level.
+- HUD: shows hearts and collected coins.
+- Controls: use the joystick to move and the Jump button to jump.
+- Pause menu: Resume, Restart and Menu.
+- The interface uses Canvas Scaler, anchors and Safe Area.
