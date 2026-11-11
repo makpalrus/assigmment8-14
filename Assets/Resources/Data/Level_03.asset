@@ -18,16 +18,13 @@ MonoBehaviour:
   playerSpawn: {x: -0.03, y: -3.3, z: 0}
   playerStats: {fileID: 11400000, guid: 3a4438bfbfd61ff42943cf84651f7557, type: 2}
   itemStats: {fileID: 11400000, guid: ba36b1e3a88e9a74ca3517b36148e449, type: 2}
-  enemies:
-  - type: 3
-    position: {x: 3.55, y: 2.35, z: 0}
-    scale: {x: 0.85, y: 0.85, z: 1}
-    artwork: {fileID: 7482667652216324306, guid: 395710c7fbdd4382bf3212a6656f55d9, type: 3}
-    color: {r: 0, g: 0, b: 0, a: 0}
-    stats: {fileID: 0}
-    walls:
-      serializedVersion: 2
-      m_Bits: 0
+  goal: 0
+  spawnPoints:
+  - {x: 3.55, y: 2.35}
+  waves:
+  - enemyPrefab: {fileID: 2497014769755866404, guid: 26bd566e1df3eea48928cd57670fbb86, type: 3}
+    count: 1
+    delay: 0
   goalAmount: 10
   timeLimit: 0
   nextLevel: 0

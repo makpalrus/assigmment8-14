@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3763a49386516d541b6fc2057afb9f4e, type: 3}
   m_Name: Player_1
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  moveSpeed: 3
+  moveSpeed: 5
   jumpForce: 10
   groundCheckRadius: 0.2
   maxHearts: 3

@@ -18,34 +18,21 @@ MonoBehaviour:
   playerSpawn: {x: -4.8, y: -3.3, z: 0}
   playerStats: {fileID: 11400000, guid: 953e163cd94074e45914d52a796366bd, type: 2}
   itemStats: {fileID: 11400000, guid: ba36b1e3a88e9a74ca3517b36148e449, type: 2}
-  enemies:
-  - type: 2
-    position: {x: 3.6, y: -3.38, z: 0}
-    scale: {x: 1, y: 1, z: 1}
-    artwork: {fileID: 8596640243658272642, guid: 5d4daff38e3d9174b873918abcf2c1d4, type: 3}
-    color: {r: 1, g: 0.72, b: 0.25, a: 1}
-    stats: {fileID: 11400000, guid: 8bf023d11622fb64d89f282913f40d69, type: 2}
-    walls:
-      serializedVersion: 2
-      m_Bits: 64
-  - type: 0
-    position: {x: -2.95, y: -3.38, z: 0}
-    scale: {x: 1, y: 1, z: 1}
-    artwork: {fileID: 8596640243658272642, guid: 5d4daff38e3d9174b873918abcf2c1d4, type: 3}
-    color: {r: 0.35, g: 0.95, b: 0.65, a: 1}
-    stats: {fileID: 11400000, guid: 1a707fed82cbc334c9b05422f5c1b2d5, type: 2}
-    walls:
-      serializedVersion: 2
-      m_Bits: 64
-  - type: 1
-    position: {x: 3.9, y: 2.15, z: 0}
-    scale: {x: 1, y: 1, z: 1}
-    artwork: {fileID: 8596640243658272642, guid: 5d4daff38e3d9174b873918abcf2c1d4, type: 3}
-    color: {r: 0.5, g: 0.75, b: 1, a: 1}
-    stats: {fileID: 11400000, guid: c6d758560f57f904d9f7c46495c697bb, type: 2}
-    walls:
-      serializedVersion: 2
-      m_Bits: 64
+  goal: 0
+  spawnPoints:
+  - {x: 3.6, y: -3.38}
+  - {x: -2.95, y: -3.38}
+  - {x: 3.9, y: 2.15}
+  waves:
+  - enemyPrefab: {fileID: 2372736234851393922, guid: 98886fcade91abf47b7b463f16c9fc74, type: 3}
+    count: 1
+    delay: 0
+  - enemyPrefab: {fileID: 5221257728652161184, guid: f672d3657d449c84ca30ef948e7075ee, type: 3}
+    count: 1
+    delay: 0
+  - enemyPrefab: {fileID: 3812894497394617609, guid: c0b28dd8183042244855ece51a428f22, type: 3}
+    count: 1
+    delay: 0
   goalAmount: 10
   timeLimit: 0
   nextLevel: 3

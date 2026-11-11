@@ -1,5 +1,15 @@
 using UnityEngine;
+using System.Collections.Generic;
 
+public enum Goal { ReachExit, CollectStars, Survive }
+
+[System.Serializable]
+public class Wave
+{
+    public GameObject enemyPrefab;
+    public int count = 1;
+    public float delay;
+}
 [CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
 public class LevelData : ScriptableObject
 {
@@ -9,22 +19,10 @@ public class LevelData : ScriptableObject
     public Vector3 playerSpawn;
     public PlayerStats playerStats;
     public ItemStats itemStats;
-    public EnemySpawn[] enemies;
+    public Goal goal = Goal.ReachExit;
+    public Vector2[] spawnPoints;
+    public List<Wave> waves = new List<Wave>();
     public int goalAmount;
     public float timeLimit;
     public int nextLevel;
-}
-
-public enum EnemyType { Patroller, Shooter, Charger, Bird }
-
-[System.Serializable]
-public class EnemySpawn
-{
-    public EnemyType type;
-    public Vector3 position;
-    public Vector3 scale;
-    public Sprite artwork;
-    public Color color;
-    public EnemyStats stats;
-    public LayerMask walls;
 }

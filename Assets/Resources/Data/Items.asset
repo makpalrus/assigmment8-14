@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809755e40453af34488eb8b45a965401, type: 3}
   m_Name: Items
   m_EditorClassIdentifier: Assembly-CSharp::ItemStats
-  coinScore: 10
   heartHealing: 1
   coinBobHeight: 0.08
   coinBobFrequency: 3
