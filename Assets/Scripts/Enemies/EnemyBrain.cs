@@ -1,74 +1,72 @@
 using UnityEngine;
+using TMPro;
 
 public abstract class EnemyBrain : MonoBehaviour
 {
-    [SerializeField] Sprite artwork;
-    [SerializeField] Color normalColor = Color.white;
+    [SerializeField] protected Color normalColor = Color.white;
     [SerializeField] Color warningColor = new Color(1f, .2f, .15f);
     [SerializeField] protected LayerMask walls = 1 << 6;
-    protected float visionRange { get { return stats.visionRange; } }
-    float visionAngle { get { return stats.visionAngle; } }
-    protected float windUp { get { return stats.windUp; } }
-    protected float cooldown { get { return stats.cooldown; } }
-    protected int damage { get { return stats.damage; } }
 
     [SerializeField] protected EnemyStats stats;
-    protected PlayerHealth target;
-    protected Collider2D targetBody;
-    protected Camera view;
-    protected SpriteRenderer picture;
+    [SerializeField] protected TMP_Text stateLabel;
+    [SerializeField] protected PlayerHealth target;
+    [SerializeField] protected Collider2D targetBody;
+    [SerializeField] protected Camera view;
+    [SerializeField] protected SpriteRenderer picture;
     protected int facing = 1;
-    protected float until;
+    protected float timer;
+    float senseTimer;
+    bool seesPlayer;
     protected Vector2 Position => transform.position;
     protected Vector2 TargetPosition => targetBody.bounds.center;
 
-    public void Configure(EnemySpawn spawn)
+    public void SetTarget(Player player, Camera camera)
     {
-        stats = spawn.stats;
-        artwork = spawn.artwork;
-        normalColor = spawn.color;
-        walls = spawn.walls;
+        target = player.GetComponent<PlayerHealth>();
+        targetBody = player.GetComponent<Collider2D>();
+        view = camera;
     }
 
     protected virtual void Start()
     {
-        if (!stats)
-            stats = Resources.Load<EnemyStats>("Data/" + GetType().Name);
-
-        var ui = MobileGameUI.Instance;
-        if (!ui || !ui.player)
+        if (!stats || !target || !targetBody || !view || !picture)
         {
-            Debug.LogError("Enemy requires a player assigned in MobileGameUI.", this);
+            Debug.LogError("Assign enemy stats, renderer and level references in the Inspector.", this);
             enabled = false;
             return;
         }
-        var player = ui.player;
-        target = player.GetComponent<PlayerHealth>();
-        targetBody = player.GetComponent<Collider2D>();
-        view = Camera.main;
-        picture = gameObject.AddComponent<SpriteRenderer>();
-        picture.sprite = artwork;
         picture.color = normalColor;
-        picture.sortingOrder = 6;
+        if (stateLabel) stateLabel.gameObject.SetActive(Application.isEditor || Debug.isDebugBuild);
     }
 
     void FixedUpdate()
     {
-        if (target && targetBody && view && MobileGameUI.Instance && MobileGameUI.Instance.IsPlaying)
+        if (target && targetBody && view && GameUI.Instance && GameUI.Instance.IsPlaying)
+        {
+            timer += Time.fixedDeltaTime;
+            senseTimer -= Time.fixedDeltaTime;
+            if (senseTimer <= 0f)
+            {
+                senseTimer = stats.senseInterval;
+                seesPlayer = CheckSight();
+            }
             Tick();
+        }
     }
 
     protected abstract void Tick();
 
-    protected bool CanSeePlayer()
+    protected bool CanSeePlayer() => seesPlayer;
+
+    bool CheckSight()
     {
         Vector2 toPlayer = TargetPosition - Position;
 
-        if (toPlayer.sqrMagnitude > visionRange * visionRange)
+        if (toPlayer.magnitude > stats.visionRange)
             return false;
 
         Vector2 forward = Vector2.right * facing;
-        if (Vector2.Angle(forward, toPlayer) > visionAngle * .5f)
+        if (Vector2.Angle(forward, toPlayer) > stats.visionAngle * .5f)
             return false;
 
         return ClearLine(TargetPosition);
@@ -109,12 +107,31 @@ public abstract class EnemyBrain : MonoBehaviour
     protected void Warn()
     {
         picture.color = warningColor;
-        until = Time.time + windUp;
     }
 
     protected void Recover()
     {
         picture.color = normalColor;
-        until = Time.time + cooldown;
+    }
+
+    void LateUpdate()
+    {
+        if (!Application.isEditor && !Debug.isDebugBuild) return;
+        if (stateLabel && view)
+        {
+            stateLabel.transform.rotation = view.transform.rotation;
+        }
+        if (targetBody) Debug.DrawRay(Position, TargetPosition - Position, seesPlayer ? Color.green : Color.red);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        if (!stats) return;
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, stats.visionRange);
+        Vector3 forward = Vector3.right * facing;
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position, Quaternion.Euler(0, 0, -stats.visionAngle / 2f) * forward * stats.visionRange);
+        Gizmos.DrawRay(transform.position, Quaternion.Euler(0, 0, stats.visionAngle / 2f) * forward * stats.visionRange);
     }
 }

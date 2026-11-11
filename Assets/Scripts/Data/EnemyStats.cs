@@ -20,4 +20,9 @@ public class EnemyStats : ScriptableObject
     public float dashDistance;
     public float laneTolerance;
     public float hitReach;
+    public float loseTime = 2f;
+    public float senseInterval = .2f;
+    public float preferredDistance = 5f;
+    public float moveSpeed = 2.2f;
+    public float recoveryTime = .4f;
 }
