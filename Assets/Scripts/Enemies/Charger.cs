@@ -2,12 +2,7 @@ using UnityEngine;
 
 public class Charger : EnemyBrain
 {
-    enum State { Guard, WindUp, Dash, Recover }
-    Vector2 waypointOffsets { get { return stats.waypointOffsets; } }
-    float dashSpeed { get { return stats.dashSpeed; } }
-    float dashDistance { get { return stats.dashDistance; } }
-    float laneTolerance { get { return stats.laneTolerance; } }
-    float hitReach { get { return stats.hitReach; } }
+    enum State { Idle, WindUp, Dash, Stunned }
 
     State state;
     float left, right, destination;
@@ -16,54 +11,67 @@ public class Charger : EnemyBrain
     protected override void Start()
     {
         base.Start();
-        left = Position.x + waypointOffsets.x;
-        right = Position.x + waypointOffsets.y;
+        left = Position.x + stats.waypointOffsets.x;
+        right = Position.x + stats.waypointOffsets.y;
         if (picture)
-            SetState(State.Guard);
+            SetState(State.Idle);
     }
 
     void SetState(State next)
     {
         state = next;
-        if (next == State.WindUp) Warn();
-        if (next == State.Recover) Recover();
+        timer = 0f;
+        if (stateLabel) stateLabel.text = next.ToString();
+        if (next == State.Dash) GameAudio.Instance.PlayDash();
+        if (next == State.WindUp)
+        {
+            Warn();
+            GameAudio.Instance.PlayChargerWarning();
+        }
+        if (next == State.Stunned) picture.color = Color.gray;
+        if (next == State.Idle) Recover();
     }
 
     protected override void Tick()
     {
         switch (state)
         {
-            case State.Guard:
+            case State.Idle:
                 Face(TargetPosition.x);
-                if (BothVisible() && CanSeePlayer() && Mathf.Abs(TargetPosition.y - Position.y) <= laneTolerance)
+                if (BothVisible() && CanSeePlayer() && Mathf.Abs(TargetPosition.y - Position.y) <= stats.laneTolerance)
                 {
-                    destination = Mathf.Clamp(Position.x + facing * dashDistance, left, right);
-                    if (Mathf.Abs(destination - Position.x) < hitReach) break;
+                    destination = Mathf.Clamp(Position.x + facing * stats.dashDistance, left, right);
+                    if (Mathf.Abs(destination - Position.x) < stats.hitReach) break;
                     hit = false;
                     SetState(State.WindUp);
                 }
                 break;
             case State.WindUp:
-                if (BothVisible() && Time.time < until) break;
-                if (BothVisible()) SetState(State.Dash);
-                else SetState(State.Recover);
+                Face(TargetPosition.x);
+                if (timer < stats.windUp) break;
+                if (BothVisible())
+                {
+                    destination = Mathf.Clamp(Position.x + facing * stats.dashDistance, left, right);
+                    SetState(State.Dash);
+                }
+                else SetState(State.Stunned);
                 break;
             case State.Dash:
                 if (!BothVisible())
                 {
-                    SetState(State.Recover);
+                    SetState(State.Stunned);
                     break;
                 }
-                bool reached = StepToward(destination, dashSpeed);
-                if (!hit && Vector2.Distance(Position, TargetPosition) <= hitReach && ClearLine(TargetPosition))
+                bool reached = StepToward(destination, stats.dashSpeed);
+                if (!hit && Vector2.Distance(Position, TargetPosition) <= stats.hitReach && ClearLine(TargetPosition))
                 {
                     hit = true;
-                    target.TakeDamage(damage);
+                    target.TakeDamage(stats.damage);
                 }
-                if (reached) SetState(State.Recover);
+                if (reached) SetState(State.Stunned);
                 break;
-            case State.Recover:
-                if (Time.time >= until) SetState(State.Guard);
+            case State.Stunned:
+                if (timer >= stats.cooldown) SetState(State.Idle);
                 break;
         }
     }
