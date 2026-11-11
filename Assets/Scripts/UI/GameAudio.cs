@@ -12,13 +12,24 @@ public class GameAudio : MonoBehaviour
     public AudioSource Music { get; private set; }
     public AudioSource Effects { get; private set; }
     public AudioSource Interface { get; private set; }
+    const string MusicVolumeKey = "Skybound.MusicVolume";
+    const string SoundVolumeKey = "Skybound.SoundVolume";
+    public float MusicVolume { get; private set; }
+    public float SoundVolume { get; private set; }
     readonly Dictionary<GameSound, AudioClip> clips = new Dictionary<GameSound, AudioClip>();
     string track;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStatics() { Instance = null; AudioListener.pause = false; }
+    static void ResetStatics()
+    {
+        Instance = null;
+        AudioListener.pause = false;
+    }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void Bootstrap() { Ensure(); }
+    static void Bootstrap()
+    {
+        Ensure();
+    }
     static GameAudio Ensure()
     {
         if (!Instance) new GameObject("Game Audio").AddComponent<GameAudio>();
@@ -26,18 +37,38 @@ public class GameAudio : MonoBehaviour
     }
     void Awake()
     {
-        if (Instance && Instance != this) { Destroy(gameObject); return; }
+        if (Instance && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Music = Source(.28f, true, false);
+        Music = Source(.28f, true, true);
         Effects = Source(.65f, false, false);
         Interface = Source(.6f, false, true);
+        SetMusicVolume(PlayerPrefs.GetFloat(MusicVolumeKey, 1f));
+        SetSoundVolume(PlayerPrefs.GetFloat(SoundVolumeKey, 1f));
         foreach (GameSound sound in System.Enum.GetValues(typeof(GameSound)))
         {
             string file = sound == GameSound.Finish ? "win" : sound.ToString().ToLowerInvariant();
             clips[sound] = Resources.Load<AudioClip>("Audio/" + file);
         }
         SceneManager.sceneLoaded += SceneLoaded;
+    }
+    public void SetMusicVolume(float value)
+    {
+        MusicVolume = Mathf.Clamp01(value);
+        Music.volume = .28f * MusicVolume;
+        PlayerPrefs.SetFloat(MusicVolumeKey, MusicVolume);
+    }
+
+    public void SetSoundVolume(float value)
+    {
+        SoundVolume = Mathf.Clamp01(value);
+        Effects.volume = .65f * SoundVolume;
+        Interface.volume = .6f * SoundVolume;
+        PlayerPrefs.SetFloat(SoundVolumeKey, SoundVolume);
     }
     AudioSource Source(float volume, bool loop, bool ignorePause)
     {
@@ -63,7 +94,10 @@ public class GameAudio : MonoBehaviour
         foreach (var root in scene.GetRootGameObjects())
             foreach (var button in root.GetComponentsInChildren<Button>(true)) button.onClick.AddListener(Click);
     }
-    static void Click() { Play(GameSound.Click); }
+    static void Click()
+    {
+        Play(GameSound.Click);
+    }
     public static void Play(GameSound sound)
     {
         var audio = Ensure();
@@ -71,7 +105,11 @@ public class GameAudio : MonoBehaviour
         var source = sound == GameSound.Click || sound == GameSound.Finish || sound == GameSound.Lose ? audio.Interface : audio.Effects;
         source.PlayOneShot(clip);
     }
-    public static void SetPaused(bool paused) { Ensure(); AudioListener.pause = paused; }
+    public static void SetPaused(bool paused)
+    {
+        Ensure();
+        AudioListener.pause = paused;
+    }
     void OnDestroy()
     {
         if (Instance != this) return;

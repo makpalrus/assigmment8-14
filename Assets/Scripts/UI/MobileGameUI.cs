@@ -23,6 +23,7 @@ public class MobileGameUI : MonoBehaviour
         resumeButton.onClick.AddListener(Resume);
         restartButton.onClick.AddListener(Restart);
         menuButton.onClick.AddListener(Menu);
+        PauseAudioControls.Create(resumeButton, restartButton, menuButton, GameAudio.Instance);
         retryButton.onClick.AddListener(Restart);
         gameOverMenuButton.onClick.AddListener(Menu);
         pauseAction = new InputAction("Pause", InputActionType.Button, "<Keyboard>/escape");
@@ -49,36 +50,89 @@ public class MobileGameUI : MonoBehaviour
         player.ClearInput();
     }
 
-    public void Play() { SetScreen(hud); Time.timeScale = 1; IsPlaying = true; GameAudio.SetPaused(false); }
-    public void Pause() { if (!IsPlaying) return; IsPlaying = false; SetScreen(pauseMenu); Time.timeScale = 0; GameAudio.SetPaused(true); }
-    public void Resume() { if (!pauseMenu.activeSelf) return; Play(); }
-    public void Restart() { Reload(SceneManager.GetActiveScene().name); }
-    public void Menu() { Reload(MainMenuScene); }
+    public void Play()
+    {
+        SetScreen(hud);
+        Time.timeScale = 1;
+        IsPlaying = true;
+        GameAudio.SetPaused(false);
+    }
+    public void Pause()
+    {
+        if (!IsPlaying) return;
+        IsPlaying = false;
+        SetScreen(pauseMenu);
+        Time.timeScale = 0;
+        GameAudio.SetPaused(true);
+    }
+    public void Resume()
+    {
+        if (!pauseMenu.activeSelf) return;
+        PlayerPrefs.Save();
+        Play();
+    }
+    public void Restart()
+    {
+        Reload(SceneManager.GetActiveScene().name);
+    }
+    public void Menu()
+    {
+        Reload(MainMenuScene);
+    }
     void Reload(string sceneName)
     {
+        PlayerPrefs.Save();
         Time.timeScale = 1;
         SceneManager.LoadScene(sceneName);
     }
-    public void AddItem() { if (IsPlaying) { Collected++; UpdateCounter(); GameAudio.Play(GameSound.Coin); if (Collected == TotalItems) GameAudio.Play(GameSound.Unlock); } }
-    void UpdateCounter() { counter.text = Collected + " / " + TotalItems; }
+    public void AddItem()
+    {
+        if (!IsPlaying)
+            return;
+
+        Collected++;
+        UpdateCounter();
+        GameAudio.Play(GameSound.Coin);
+        if (Collected == TotalItems)
+            GameAudio.Play(GameSound.Unlock);
+    }
+    void UpdateCounter()
+    {
+        counter.text = Collected + " / " + TotalItems;
+    }
     public void ShowVictory()
     {
         EndGame(true);
-        foreach(var label in gameOver.GetComponentsInChildren<Text>(true)) if(label.name == "Title") label.text = "YOU WIN!";
+        foreach (Text label in gameOver.GetComponentsInChildren<Text>(true))
+        {
+            if (label.name == "Title")
+                label.text = "YOU WIN!";
+        }
     }
     public void RefreshHearts(int count)
     {
         for (int i = 0; i < hearts.Length; i++) hearts[i].color = i < count ? new Color32(255, 101, 127, 255) : new Color32(72, 84, 106, 255);
     }
-    public void ShowGameOver() { EndGame(false); }
+    public void ShowGameOver()
+    {
+        EndGame(false);
+    }
     void EndGame(bool victory)
     {
-        IsPlaying = false; SetScreen(gameOver); Time.timeScale = 0;
+        IsPlaying = false;
+        SetScreen(gameOver);
+        Time.timeScale = 0;
         GameAudio.SetPaused(true);
         GameAudio.Play(victory ? GameSound.Finish : GameSound.Lose);
     }
-    void OnApplicationFocus(bool focused) { if (!focused && IsPlaying) Pause(); }
-    void OnApplicationPause(bool paused) { if (paused && IsPlaying) Pause(); }
+    void OnApplicationFocus(bool focused)
+    {
+        if (!focused && IsPlaying) Pause();
+    }
+    void OnApplicationPause(bool paused)
+    {
+        if (paused && IsPlaying) Pause();
+    }
     public void Quit()
     {
         Time.timeScale = 1;
@@ -91,7 +145,11 @@ public class MobileGameUI : MonoBehaviour
     void OnDestroy()
     {
         pauseAction?.Dispose();
-        if (Instance == this) { Instance = null; Time.timeScale = 1; }
+        if (Instance == this)
+        {
+            Instance = null;
+            Time.timeScale = 1;
+        }
     }
 }
 

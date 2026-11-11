@@ -89,7 +89,8 @@ public static class PlatformLevelsSetup
         var coin=new GameObject("Platform Coin",typeof(SpriteRenderer),typeof(CircleCollider2D),typeof(CollectibleCoin));
         coin.transform.SetParent(go.transform,false); coin.transform.localPosition=new Vector3(0,.9f,0); coin.transform.localScale=Vector3.one*.65f;
         coin.GetComponent<SpriteRenderer>().sprite=coins[0]; coin.GetComponent<SpriteRenderer>().sortingOrder=5;
-        coin.GetComponent<CircleCollider2D>().isTrigger=true; coin.GetComponent<CircleCollider2D>().radius=.45f; coin.GetComponent<CollectibleCoin>().frames=coins;
+        coin.GetComponent<CircleCollider2D>().isTrigger=true; coin.GetComponent<CircleCollider2D>().radius=.45f;
+        coin.AddComponent<Animator>().runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Animation/Coin.controller");
     }
 }
 #endif

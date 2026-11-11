@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class CollectibleCoin : MonoBehaviour
 {
-    public Sprite[] frames;
-    SpriteRenderer picture;
     Vector3 origin;
     float age;
     bool collected;
-    void Awake() { picture = GetComponent<SpriteRenderer>(); origin = transform.position; }
+    void Awake()
+    {
+        origin = transform.localPosition;
+    }
     void Update()
     {
         age += Time.deltaTime;
-        transform.position = origin + Vector3.up * (Mathf.Sin(age * 3) * .08f);
-        if (picture && frames != null && frames.Length > 0) picture.sprite = frames[(int)(age * 8) % frames.Length];
+        transform.localPosition = origin + Vector3.up * (Mathf.Sin(age * 3) * .08f);
     }
     void OnTriggerEnter2D(Collider2D other)
     {

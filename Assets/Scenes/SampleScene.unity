@@ -1831,6 +1831,7 @@ GameObject:
   - component: {fileID: 638360298}
   - component: {fileID: 638360297}
   - component: {fileID: 638360296}
+  - component: {fileID: 3100000200}
   m_Layer: 0
   m_Name: Gold Coin 7
   m_TagString: Untagged
@@ -1847,7 +1848,7 @@ Transform:
   m_GameObject: {fileID: 638360294}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.31, y: -2.83, z: 0}
+  m_LocalPosition: {x: 4, y: -2.81, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1865,11 +1866,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &638360297
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2389,6 +2385,7 @@ GameObject:
   - component: {fileID: 832499731}
   - component: {fileID: 832499730}
   - component: {fileID: 832499729}
+  - component: {fileID: 3100000201}
   m_Layer: 0
   m_Name: Gold Coin 1
   m_TagString: Untagged
@@ -2405,7 +2402,7 @@ Transform:
   m_GameObject: {fileID: 832499727}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.5, y: -2.7670012, z: 0}
+  m_LocalPosition: {x: -6.36, y: -2.83, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2423,11 +2420,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &832499730
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2710,6 +2702,7 @@ GameObject:
   - component: {fileID: 926286178}
   - component: {fileID: 926286177}
   - component: {fileID: 926286176}
+  - component: {fileID: 3100000202}
   m_Layer: 0
   m_Name: Platform Coin
   m_TagString: Untagged
@@ -2744,11 +2737,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &926286177
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2938,6 +2926,7 @@ GameObject:
   - component: {fileID: 940737838}
   - component: {fileID: 940737837}
   - component: {fileID: 940737836}
+  - component: {fileID: 3100000203}
   m_Layer: 0
   m_Name: Platform Coin
   m_TagString: Untagged
@@ -2972,11 +2961,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &940737837
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4327,6 +4311,7 @@ GameObject:
   - component: {fileID: 1291825194}
   - component: {fileID: 1291825193}
   - component: {fileID: 1291825192}
+  - component: {fileID: 3100000204}
   m_Layer: 0
   m_Name: Platform Coin
   m_TagString: Untagged
@@ -4361,11 +4346,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &1291825193
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4977,6 +4957,7 @@ GameObject:
   - component: {fileID: 1447122078}
   - component: {fileID: 1447122077}
   - component: {fileID: 1447122076}
+  - component: {fileID: 3100000205}
   m_Layer: 0
   m_Name: Gold Coin 6
   m_TagString: Untagged
@@ -4993,7 +4974,7 @@ Transform:
   m_GameObject: {fileID: 1447122074}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.92, y: -2.79, z: 0}
+  m_LocalPosition: {x: 2.43, y: -2.29, z: 0}
   m_LocalScale: {x: 0.65, y: 0.65, z: 0.65}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5011,11 +4992,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d834ee118544fa4ba9a32b66cfdd72f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleCoin
-  frames:
-  - {fileID: -4986890610287934012, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 6143208460787649835, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: 7609282858266732271, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
-  - {fileID: -6288512792030432889, guid: 274d64617113287499ed1c4165d1d8f3, type: 3}
 --- !u!58 &1447122077
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -5649,7 +5625,7 @@ Transform:
   m_GameObject: {fileID: 1666340444}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.14, y: -3.16, z: 0}
+  m_LocalPosition: {x: 5.41, y: -3.2, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6430,6 +6406,7 @@ GameObject:
   - component: {fileID: 1968483545}
   - component: {fileID: 1968483546}
   - component: {fileID: 1968483547}
+  - component: {fileID: 3100000099}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -7075,6 +7052,132 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130058243}
   m_CullTransparentMesh: 1
+--- !u!114 &3100000099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968483540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 73a09a5a5a124d97af53ed86bd5473c8, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme:
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
+--- !u!95 &3100000200
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 638360294}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &3100000201
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832499727}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &3100000202
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926286174}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &3100000203
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 940737834}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &3100000204
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291825190}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!95 &3100000205
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1447122074}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f9c2118d5665450da86a8d36abdf1f12, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

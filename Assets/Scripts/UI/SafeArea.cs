@@ -7,7 +7,11 @@ public class SafeArea : MonoBehaviour
     RectTransform panel;
     Rect last;
     Vector2Int screenSize;
-    void Awake() { panel = GetComponent<RectTransform>(); Apply(Screen.safeArea, Screen.width, Screen.height); }
+    void Awake()
+    {
+        panel = GetComponent<RectTransform>();
+        Apply(Screen.safeArea, Screen.width, Screen.height);
+    }
     void Update()
     {
         if (last != Screen.safeArea || screenSize != new Vector2Int(Screen.width, Screen.height))

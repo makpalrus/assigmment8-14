@@ -11,22 +11,53 @@ public class PlayerHealth : MonoBehaviour
     float nextDamage;
     SpriteRenderer picture;
     Coroutine blink;
-    void Awake() { Hearts = maxHearts; spawn = transform.position; picture = GetComponent<SpriteRenderer>(); }
+    void Awake()
+    {
+        Hearts = maxHearts;
+        spawn = transform.position;
+        picture = GetComponent<SpriteRenderer>();
+    }
     void Update()
     {
         if (MobileGameUI.Instance && MobileGameUI.Instance.IsPlaying && transform.position.y < fallY) TakeDamage(1);
     }
     // The level's spike tilemap already has the Damage tag. Support solid
     // colliders and triggers, including contact that began during immunity.
-    void OnCollisionEnter2D(Collision2D collision) { TouchHazard(collision.collider); }
-    void OnCollisionStay2D(Collision2D collision) { TouchHazard(collision.collider); }
-    void OnTriggerEnter2D(Collider2D other) { TouchHazard(other); }
-    void OnTriggerStay2D(Collider2D other) { TouchHazard(other); }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        TouchHazard(collision.collider);
+    }
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        TouchHazard(collision.collider);
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        TouchHazard(other);
+    }
+    void OnTriggerStay2D(Collider2D other)
+    {
+        TouchHazard(other);
+    }
     void TouchHazard(Collider2D other)
     {
         for (Transform part = other.transform; part; part = part.parent)
-            if (part.CompareTag("Damage")) { TakeDamage(1); return; }
+            if (part.CompareTag("Damage"))
+            {
+                TakeDamage(1);
+                return;
+            }
     }
+    public bool Heal(int amount)
+    {
+        if (amount <= 0 || Hearts <= 0 || Hearts >= maxHearts)
+            return false;
+
+        Hearts = Mathf.Min(maxHearts, Hearts + amount);
+        MobileGameUI.Instance.RefreshHearts(Hearts);
+        return true;
+    }
+
     public void TakeDamage(int amount)
     {
         if (amount <= 0 || Time.time < nextDamage || !MobileGameUI.Instance || !MobileGameUI.Instance.IsPlaying) return;

@@ -103,7 +103,7 @@ public static class MobileUISetup
             go.transform.SetParent(coins.transform); go.transform.position=new Vector3(x,hit.point.y+1.15f,0); go.transform.localScale=Vector3.one*.65f;
             go.GetComponent<SpriteRenderer>().sprite=coin; go.GetComponent<SpriteRenderer>().sortingOrder=5;
             go.GetComponent<CircleCollider2D>().isTrigger=true; go.GetComponent<CircleCollider2D>().radius=.45f;
-            go.GetComponent<CollectibleCoin>().frames=sprites;
+            go.AddComponent<Animator>().runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/Animation/Coin.controller");
         }
         PlayerSettings.defaultInterfaceOrientation=UIOrientation.LandscapeLeft;
         PlayerSettings.allowedAutorotateToPortrait=false; PlayerSettings.allowedAutorotateToPortraitUpsideDown=false;
