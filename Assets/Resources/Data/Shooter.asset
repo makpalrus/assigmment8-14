@@ -29,3 +29,8 @@ MonoBehaviour:
   dashDistance: 2.8
   laneTolerance: 0.85
   hitReach: 0.65
+  loseTime: 2
+  senseInterval: 0.2
+  preferredDistance: 5
+  moveSpeed: 2.2
+  recoveryTime: 0.4
