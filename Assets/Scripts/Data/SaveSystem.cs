@@ -19,18 +19,17 @@ public static class SaveSystem
             string json = File.ReadAllText(FilePath);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
             if (data == null || data.version != 1 || data.unlockedLevels == null ||
-                !data.unlockedLevels.Contains(1) || data.bestScore < 0 ||
+                !data.unlockedLevels.Contains(1) || data.bestTime < 0f || float.IsNaN(data.bestTime) || float.IsInfinity(data.bestTime) ||
                 data.completedLevels < 0 || data.completedLevels > 3 ||
                 float.IsNaN(data.musicVolume) || float.IsNaN(data.soundVolume) ||
                 float.IsInfinity(data.musicVolume) || float.IsInfinity(data.soundVolume) ||
                 data.musicVolume < 0f || data.musicVolume > 1f ||
                 data.soundVolume < 0f || data.soundVolume > 1f ||
+                float.IsNaN(data.masterVolume) || float.IsInfinity(data.masterVolume) ||
+                data.masterVolume < 0f || data.masterVolume > 1f ||
                 data.unlockedLevels.Exists(level => level < 1 || level > 3))
                 throw new InvalidDataException("Invalid save values.");
 
-            if (InvalidTime(data.lastRunTime) || InvalidTime(data.previousRunTime) ||
-                InvalidTime(data.bestRunTime) || data.lastRunScore < 0 || data.finishedRuns < 0)
-                throw new InvalidDataException("Invalid run result.");
             return data;
         }
         catch (Exception error)
@@ -38,11 +37,6 @@ public static class SaveSystem
             Debug.LogWarning("Save reset to defaults. " + error.Message);
             return new SaveData();
         }
-    }
-
-    static bool InvalidTime(float seconds)
-    {
-        return seconds < 0f || float.IsNaN(seconds) || float.IsInfinity(seconds);
     }
 
     public static bool Save(SaveData data)
@@ -61,6 +55,20 @@ public static class SaveSystem
         catch (Exception error)
         {
             Debug.LogWarning("Could not save progress. " + error.Message);
+            return false;
+        }
+    }
+
+    public static bool Delete()
+    {
+        try
+        {
+            if (File.Exists(FilePath)) File.Delete(FilePath);
+            return true;
+        }
+        catch (Exception error)
+        {
+            Debug.LogWarning("Could not reset progress. " + error.Message);
             return false;
         }
     }

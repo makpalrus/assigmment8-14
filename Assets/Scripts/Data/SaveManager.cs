@@ -1,17 +1,15 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(-4000)]
 public class SaveManager : MonoBehaviour
 {
     static SaveManager instance;
     public SaveData Data { get; private set; }
-    public bool LastRunWasRecord { get; private set; }
 
     public static SaveManager Instance
     {
         get
         {
-            if (!instance)
-                new GameObject("Save Manager").AddComponent<SaveManager>();
             return instance;
         }
     }
@@ -34,22 +32,6 @@ public class SaveManager : MonoBehaviour
         Data = SaveSystem.Load();
     }
 
-    public void RunCompleted(int score, float seconds)
-    {
-        float previousBest = Data.bestRunTime;
-        bool newRecord = previousBest == 0f || seconds < previousBest;
-        LastRunWasRecord = newRecord;
-        Data.previousRunTime = Data.lastRunTime;
-        Data.lastRunTime = seconds;
-        Data.lastRunScore = score;
-        Data.finishedRuns++;
-        if (newRecord)
-            Data.bestRunTime = seconds;
-        Data.bestScore = Mathf.Max(Data.bestScore, score);
-        Save();
-
-    }
-
     public void LevelCompleted(LevelData level)
     {
         Data.completedLevels = Mathf.Max(Data.completedLevels, level.number);
@@ -58,6 +40,14 @@ public class SaveManager : MonoBehaviour
         Save();
     }
 
+    public bool FinishRun(float seconds)
+    {
+        if (seconds <= 0f) return false;
+        if (Data.bestTime > 0f && seconds >= Data.bestTime) return false;
+        Data.bestTime = seconds;
+        Save();
+        return true;
+    }
     public void Save()
     {
         SaveSystem.Save(Data);
@@ -66,19 +56,11 @@ public class SaveManager : MonoBehaviour
     public bool ResetProgress()
     {
         SaveData defaults = new SaveData();
-        if (!SaveSystem.Save(defaults))
+        if (!SaveSystem.Delete())
             return false;
 
         Data = defaults;
-        LastRunWasRecord = false;
-        PlayerPrefs.DeleteKey("Skybound.MusicVolume");
-        PlayerPrefs.DeleteKey("Skybound.SoundVolume");
-        PlayerPrefs.Save();
-        if (GameAudio.Instance)
-        {
-            GameAudio.Instance.SetMusicVolume(Data.musicVolume);
-            GameAudio.Instance.SetSoundVolume(Data.soundVolume);
-        }
+        if (GameAudio.Instance) GameAudio.Instance.ApplyVolume();
         return true;
     }
 
