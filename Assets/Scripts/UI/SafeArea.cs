@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// Lectures 8–9: only interactive HUD goes inside this panel; backdrop stays full screen.
 [RequireComponent(typeof(RectTransform))]
 public class SafeArea : MonoBehaviour
 {

@@ -1,83 +1,67 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 [DefaultExecutionOrder(-2000)]
 public class LevelLoader : MonoBehaviour
 {
-    public static LevelData Current { get; private set; }
-    public static LevelLoader Instance { get; private set; }
-    public static int SelectedLevel { get; private set; } = 1;
-    public static float RunTime { get; private set; }
-    public static int RunScore { get; private set; }
-    public static bool RunActive { get; private set; }
-    public float Elapsed { get; private set; }
-    UnityEngine.UI.Text timerLabel;
+    public static LevelData Current;
+    public static int SelectedLevel = 1;
+    static int completedInRun;
+    public static bool NewRecord;
+    public static bool FullRun;
+    public static bool RunActive;
+    public LevelData[] levels;
+    GameUI ui;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
     {
         Current = null;
-        Instance = null;
         SelectedLevel = 1;
-        RunTime = 0f;
-        RunScore = 0;
+        completedInRun = 0;
+        NewRecord = false;
+        FullRun = false;
         RunActive = false;
-    }
-
-    public static LevelData GetLevel(int number)
-    {
-        return Resources.Load<LevelData>("Data/Level_" + number.ToString("00"));
-    }
-
-    public static LevelData ActiveData
-    {
-        get
-        {
-            if (SceneManager.GetActiveScene().name == "Game" && Current)
-                return Current;
-
-            string scene = SceneManager.GetActiveScene().name;
-            int number = scene == "Level2" ? 2 : scene == "Level3" ? 3 : 1;
-            return GetLevel(number);
-        }
+        GameUI.TotalTime = 0f;
     }
 
     public static void StartRun()
     {
-        SelectedLevel = 1;
-        RunTime = 0f;
-        RunScore = 0;
+        StartLevel(1);
+    }
+
+    public static void StartLevel(int number)
+    {
+        if (!SaveManager.Instance.Data.unlockedLevels.Contains(number)) return;
+        completedInRun = 0;
+        NewRecord = false;
+        FullRun = false;
+        GameUI.TotalTime = 0f;
         RunActive = true;
-        Open(1);
+        Open(number);
     }
 
     public static void Open(int number)
     {
-        if (!RunActive || number != SelectedLevel)
-            return;
-
         SelectedLevel = number;
         Time.timeScale = 1f;
         SceneManager.LoadScene("Game");
     }
 
-    public static void CompleteLevel(int score)
+    public static void CompleteLevel()
     {
-        if (!RunActive)
-            return;
-
-        RunScore += score;
+        if (!RunActive) return;
+        if (Current.number == completedInRun + 1) completedInRun++;
         SaveManager.Instance.LevelCompleted(Current);
-        if (Current.nextLevel > 0)
+        if (Current.nextLevel > 0) Open(Current.nextLevel);
+        else
         {
-            SelectedLevel = Current.nextLevel;
-            Open(SelectedLevel);
-            return;
+            RunActive = false;
+            FullRun = completedInRun == 3;
+            if (FullRun) NewRecord = SaveManager.Instance.FinishRun(GameUI.TotalTime);
+            GameUI.Instance.ShowVictory();
         }
-
-        SaveManager.Instance.RunCompleted(RunScore, RunTime);
-        RunActive = false;
-        MobileGameUI.Instance.ShowVictory();
     }
 
     public static void EndRun()
@@ -87,59 +71,30 @@ public class LevelLoader : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
-        Current = GetLevel(SelectedLevel);
-        if (!Current || !Current.layoutPrefab)
-            throw new System.InvalidOperationException("Level data or layout is missing.");
-
+        Current = levels[SelectedLevel - 1];
+        RunActive = true;
         GameObject layout = Instantiate(Current.layoutPrefab);
-        MobileGameUI ui = layout.GetComponentInChildren<MobileGameUI>();
-        timerLabel = LevelSelectUI.CreateTimer(ui.counter);
-        Player player = layout.GetComponentInChildren<Player>();
-        player.transform.position = Current.playerSpawn;
-        player.GetComponent<PlayerHealth>().SetSpawn(Current.playerSpawn);
+        ui = layout.GetComponentInChildren<GameUI>();
+        ui.player.transform.position = Current.playerSpawn;
+        ui.player.GetComponent<PlayerHealth>().SetSpawn(Current.playerSpawn);
+    }
 
-        foreach (EnemySpawn spawn in Current.enemies)
+    IEnumerator Start()
+    {
+        int point = 0;
+        foreach (Wave wave in Current.waves)
         {
-            GameObject enemy = new GameObject(spawn.type.ToString());
-            enemy.transform.position = spawn.position;
-            enemy.transform.localScale = spawn.scale;
-            if (spawn.type == EnemyType.Bird)
+            if (wave.delay > 0f) yield return new WaitForSeconds(wave.delay);
+            for (int i = 0; i < wave.count; i++)
             {
-                enemy.tag = "Damage";
-                enemy.AddComponent<FlyingEnemy>().SetArtwork(spawn.artwork);
-                continue;
+                Vector2 position = Current.spawnPoints[point % Current.spawnPoints.Length];
+                GameObject enemy = Instantiate(wave.enemyPrefab, position, Quaternion.identity);
+                EnemyBrain brain = enemy.GetComponent<EnemyBrain>();
+                if (brain != null) brain.SetTarget(ui.player, ui.view);
+                Patroller patroller = enemy.GetComponent<Patroller>();
+                if (patroller != null) patroller.SetWaypoints(ui.patrolPoints);
+                point++;
             }
-
-            EnemyBrain brain;
-            switch (spawn.type)
-            {
-                case EnemyType.Patroller: brain = enemy.AddComponent<Patroller>(); break;
-                case EnemyType.Shooter: brain = enemy.AddComponent<Shooter>(); break;
-                default: brain = enemy.AddComponent<Charger>(); break;
-            }
-            brain.Configure(spawn);
         }
-    }
-
-    void Update()
-    {
-        if (!MobileGameUI.Instance || !MobileGameUI.Instance.IsPlaying)
-            return;
-
-        Elapsed += Time.deltaTime;
-        if (RunActive)
-            RunTime += Time.deltaTime;
-        timerLabel.text = "TIME  " + FormatTime(RunTime);
-        if (Current.timeLimit > 0f && Elapsed >= Current.timeLimit)
-            MobileGameUI.Instance.ShowGameOver();
-    }
-
-    public static string FormatTime(float seconds)
-    {
-        double minutes = System.Math.Floor(seconds / 60d);
-        int remainder = (int)(seconds % 60f);
-        int hundredths = (int)((seconds % 1f) * 100f);
-        return minutes.ToString("00") + ":" + remainder.ToString("00") + "." + hundredths.ToString("00");
     }
 }

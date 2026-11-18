@@ -1,51 +1,33 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D))]
 public class FinishGate : MonoBehaviour
 {
-    public string nextLevel = "Level2";
     public TextMesh message;
     SpriteRenderer flag;
     bool finished;
-    public bool IsUnlocked => MobileGameUI.Instance && MobileGameUI.Instance.TotalItems > 0 && MobileGameUI.Instance.Collected >= MobileGameUI.Instance.TotalItems;
+
     void Awake()
     {
         flag = GetComponent<SpriteRenderer>();
     }
+
     void Update()
     {
-        bool ready = IsUnlocked;
-        flag.color = ready ? new Color32(100,255,150,255) : new Color32(160,160,175,255);
-        if (message)
-        {
-            int next = LevelLoader.ActiveData.nextLevel;
-            nextLevel = next > 0 ? "Level" + next : "";
-            string destination = nextLevel switch
-            {
-                "Level2" => "LEVEL 2 >",
-                "Level3" => "LEVEL 3 >",
-                _ => "FINISH!"
-            };
-            message.text = ready ? destination : "COLLECT ALL COINS";
-        }
+        GameUI ui = GameUI.Instance;
+        bool ready = ui.Collected >= ui.TotalItems;
+        flag.color = ready ? new Color32(100, 255, 150, 255) : new Color32(160, 160, 175, 255);
+        if (!ready) message.text = "COLLECT ALL COINS";
+        else if (LevelLoader.Current.nextLevel > 0) message.text = "LEVEL " + LevelLoader.Current.nextLevel + " >";
+        else message.text = "FINISH!";
     }
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        TryFinish(other);
-    }
+
     void OnTriggerStay2D(Collider2D other)
     {
-        TryFinish(other);
-    }
-    void TryFinish(Collider2D other)
-    {
-        var ui = MobileGameUI.Instance;
-        if(finished || !IsUnlocked || !ui || !ui.IsPlaying || !other.GetComponentInParent<Player>()) return;
+        GameUI ui = GameUI.Instance;
+        if (finished || !ui.IsPlaying || ui.Collected < ui.TotalItems) return;
+        if (other.GetComponentInParent<Player>() == null) return;
         finished = true;
-        if (LevelLoader.ActiveData.nextLevel > 0)
-            GameAudio.Play(GameSound.Finish);
-        LevelLoader.CompleteLevel(ui.Score);
+        if (LevelLoader.Current.nextLevel > 0) GameAudio.Instance.PlayFinish();
+        LevelLoader.CompleteLevel();
     }
 }
-
