@@ -3,15 +3,21 @@ using UnityEngine;
 public sealed class FlyingEnemy : MonoBehaviour
 {
     [SerializeField] Sprite artwork;
-    [SerializeField, Min(.1f)] float travel = 1.2f;
-    [SerializeField, Min(.1f)] float speed = 1.6f;
-    [SerializeField, Min(0f)] float bobHeight = .16f;
-    [SerializeField, Min(.1f)] float bobFrequency = 4f;
+    public float travel { get { return LevelLoader.ActiveData.itemStats.birdTravel; } }
+    public float speed { get { return LevelLoader.ActiveData.itemStats.birdSpeed; } }
+    public float bobHeight { get { return LevelLoader.ActiveData.itemStats.birdBobHeight; } }
+    public float bobFrequency { get { return LevelLoader.ActiveData.itemStats.birdBobFrequency; } }
 
     Rigidbody2D body;
     SpriteRenderer picture;
     Vector2 center;
     int direction = 1;
+
+    public void SetArtwork(Sprite sprite)
+    {
+        artwork = sprite;
+        picture.sprite = sprite;
+    }
 
     void Awake()
     {

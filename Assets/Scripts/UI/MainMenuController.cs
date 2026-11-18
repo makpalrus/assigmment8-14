@@ -7,17 +7,19 @@ public class MainMenuController : MonoBehaviour
     public string levelScene = "SampleScene";
     public Button playButton;
     public Button quitButton;
+    GameObject levelSelect;
 
     void Awake()
     {
         Time.timeScale = 1f;
         playButton.onClick.AddListener(Play);
         quitButton.onClick.AddListener(Quit);
+        levelSelect = LevelSelectUI.Create(playButton, quitButton);
     }
     public void Play()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(levelScene);
+        levelSelect.SetActive(true);
     }
     public void Quit()
     {

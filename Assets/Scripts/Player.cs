@@ -4,10 +4,10 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 10f;
+    public float moveSpeed { get { return LevelLoader.ActiveData.playerStats.moveSpeed; } }
+    public float jumpForce { get { return LevelLoader.ActiveData.playerStats.jumpForce; } }
     public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
+    public float groundCheckRadius { get { return LevelLoader.ActiveData.playerStats.groundCheckRadius; } }
     public LayerMask groundLayer;
     Rigidbody2D rb;
     Animator animator;

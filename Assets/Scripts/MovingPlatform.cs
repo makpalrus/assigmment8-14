@@ -4,8 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public sealed class MovingPlatform : MonoBehaviour
 {
-    [SerializeField, Min(0.1f)] float travel = 0.65f;
-    [SerializeField, Min(0.1f)] float speed = 1.4f;
+    public float travel { get { return LevelLoader.ActiveData.itemStats.platformTravel; } }
+    public float speed { get { return LevelLoader.ActiveData.itemStats.platformSpeed; } }
 
     Rigidbody2D body;
     Vector2 center;

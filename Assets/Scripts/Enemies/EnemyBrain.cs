@@ -6,12 +6,13 @@ public abstract class EnemyBrain : MonoBehaviour
     [SerializeField] Color normalColor = Color.white;
     [SerializeField] Color warningColor = new Color(1f, .2f, .15f);
     [SerializeField] protected LayerMask walls = 1 << 6;
-    [SerializeField, Min(0.1f)] protected float visionRange = 4f;
-    [SerializeField, Range(1f, 360f)] float visionAngle = 150f;
-    [SerializeField, Range(.3f, .8f)] protected float windUp = .6f;
-    [SerializeField, Min(.1f)] protected float cooldown = 1.4f;
-    [SerializeField, Min(1)] protected int damage = 1;
+    protected float visionRange { get { return stats.visionRange; } }
+    float visionAngle { get { return stats.visionAngle; } }
+    protected float windUp { get { return stats.windUp; } }
+    protected float cooldown { get { return stats.cooldown; } }
+    protected int damage { get { return stats.damage; } }
 
+    [SerializeField] protected EnemyStats stats;
     protected PlayerHealth target;
     protected Collider2D targetBody;
     protected Camera view;
@@ -21,8 +22,19 @@ public abstract class EnemyBrain : MonoBehaviour
     protected Vector2 Position => transform.position;
     protected Vector2 TargetPosition => targetBody.bounds.center;
 
+    public void Configure(EnemySpawn spawn)
+    {
+        stats = spawn.stats;
+        artwork = spawn.artwork;
+        normalColor = spawn.color;
+        walls = spawn.walls;
+    }
+
     protected virtual void Start()
     {
+        if (!stats)
+            stats = Resources.Load<EnemyStats>("Data/" + GetType().Name);
+
         var ui = MobileGameUI.Instance;
         if (!ui || !ui.player)
         {

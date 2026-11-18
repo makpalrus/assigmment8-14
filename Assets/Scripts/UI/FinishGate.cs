@@ -19,6 +19,8 @@ public class FinishGate : MonoBehaviour
         flag.color = ready ? new Color32(100,255,150,255) : new Color32(160,160,175,255);
         if (message)
         {
+            int next = LevelLoader.ActiveData.nextLevel;
+            nextLevel = next > 0 ? "Level" + next : "";
             string destination = nextLevel switch
             {
                 "Level2" => "LEVEL 2 >",
@@ -41,13 +43,9 @@ public class FinishGate : MonoBehaviour
         var ui = MobileGameUI.Instance;
         if(finished || !IsUnlocked || !ui || !ui.IsPlaying || !other.GetComponentInParent<Player>()) return;
         finished = true;
-        if(string.IsNullOrEmpty(nextLevel)) ui.ShowVictory();
-        else
-        {
+        if (LevelLoader.ActiveData.nextLevel > 0)
             GameAudio.Play(GameSound.Finish);
-            Time.timeScale=1;
-            SceneManager.LoadScene(nextLevel);
-        }
+        LevelLoader.CompleteLevel(ui.Score);
     }
 }
 

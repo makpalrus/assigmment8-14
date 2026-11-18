@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d4bc6821dd57c146b04c51d00b9414b, type: 3}
+  m_Name: Level_01
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  number: 1
+  title: SampleScene
+  layoutPrefab: {fileID: 8605322815995944857, guid: fb9265f1c5dd5eb4d8116160c168254e, type: 3}
+  playerSpawn: {x: -0.03, y: -3.3, z: 0}
+  playerStats: {fileID: 11400000, guid: 14287acf79e350840b14afb2899bd577, type: 2}
+  itemStats: {fileID: 11400000, guid: ba36b1e3a88e9a74ca3517b36148e449, type: 2}
+  enemies: []
+  goalAmount: 6
+  timeLimit: 0
+  nextLevel: 2

@@ -4,10 +4,10 @@ public class Patroller : EnemyBrain
 {
     enum State { Patrol, Chase, WindUp, Recover }
     [SerializeField] Transform[] waypoints;
-    [SerializeField] Vector2 waypointOffsets = new Vector2(-.85f, .85f);
-    [SerializeField, Min(.1f)] float patrolSpeed = 1.1f;
-    [SerializeField, Min(.1f)] float chaseSpeed = 2f;
-    [SerializeField, Min(.1f)] float strikeReach = 1.05f;
+    Vector2 waypointOffsets { get { return stats.waypointOffsets; } }
+    float patrolSpeed { get { return stats.patrolSpeed; } }
+    float chaseSpeed { get { return stats.chaseSpeed; } }
+    float strikeReach { get { return stats.strikeReach; } }
 
     State state;
     float left, right;

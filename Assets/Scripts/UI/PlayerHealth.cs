@@ -4,8 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Player))]
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHearts = 3;
-    public float fallY = -7f;
+    public int maxHearts { get { return LevelLoader.ActiveData.playerStats.maxHearts; } }
+    public float fallY { get { return LevelLoader.ActiveData.playerStats.fallY; } }
     public int Hearts { get; private set; }
     Vector3 spawn;
     float nextDamage;
@@ -17,12 +17,15 @@ public class PlayerHealth : MonoBehaviour
         spawn = transform.position;
         picture = GetComponent<SpriteRenderer>();
     }
+    public void SetSpawn(Vector3 position)
+    {
+        spawn = position;
+    }
+
     void Update()
     {
-        if (MobileGameUI.Instance && MobileGameUI.Instance.IsPlaying && transform.position.y < fallY) TakeDamage(1);
+        if (MobileGameUI.Instance && MobileGameUI.Instance.IsPlaying && transform.position.y < fallY) TakeDamage(LevelLoader.ActiveData.playerStats.hazardDamage);
     }
-    // The level's spike tilemap already has the Damage tag. Support solid
-    // colliders and triggers, including contact that began during immunity.
     void OnCollisionEnter2D(Collision2D collision)
     {
         TouchHazard(collision.collider);
@@ -44,7 +47,7 @@ public class PlayerHealth : MonoBehaviour
         for (Transform part = other.transform; part; part = part.parent)
             if (part.CompareTag("Damage"))
             {
-                TakeDamage(1);
+                TakeDamage(LevelLoader.ActiveData.playerStats.hazardDamage);
                 return;
             }
     }
@@ -66,7 +69,7 @@ public class PlayerHealth : MonoBehaviour
         if (picture) picture.enabled = true;
         Hearts = Mathf.Max(0, Hearts - amount);
         if (Hearts > 0) GameAudio.Play(GameSound.Hurt);
-        nextDamage = Time.time + 1;
+        nextDamage = Time.time + LevelLoader.ActiveData.playerStats.invincibilityTime;
         MobileGameUI.Instance.RefreshHearts(Hearts);
         GetComponent<Player>().ClearInput();
         GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
@@ -74,13 +77,12 @@ public class PlayerHealth : MonoBehaviour
         if (Hearts == 0) MobileGameUI.Instance.ShowGameOver();
         else if (picture) blink = StartCoroutine(BlinkAfterHit());
     }
-    // Lectures 5–6: a coroutine shows the one-second invulnerability window.
     IEnumerator BlinkAfterHit()
     {
         while (Time.time < nextDamage)
         {
             picture.enabled = !picture.enabled;
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(LevelLoader.ActiveData.playerStats.blinkInterval);
         }
         picture.enabled = true;
         blink = null;

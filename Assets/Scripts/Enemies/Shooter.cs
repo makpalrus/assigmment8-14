@@ -3,10 +3,10 @@ using UnityEngine;
 public class Shooter : EnemyBrain
 {
     enum State { Scan, Aim, Recover }
-    [SerializeField, Min(.1f)] float scanInterval = 1.1f;
-    [SerializeField, Min(.1f)] float projectileSpeed = 4f;
-    [SerializeField, Min(.1f)] float projectileLifetime = 1.5f;
-    [SerializeField, Min(.01f)] float projectileScale = .24f;
+    float scanInterval { get { return stats.scanInterval; } }
+    float projectileSpeed { get { return stats.projectileSpeed; } }
+    float projectileLifetime { get { return stats.projectileLifetime; } }
+    float projectileScale { get { return stats.projectileScale; } }
 
     State state;
     Vector2 shotDirection;

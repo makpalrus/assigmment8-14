@@ -5,15 +5,12 @@ using UnityEngine.UI;
 
 public enum GameSound { Jump, Coin, Hurt, Click, Unlock, Finish, Lose }
 
-// Lecture 5–6: AudioSource.PlayOneShot lets short effects overlap naturally.
 public class GameAudio : MonoBehaviour
 {
     public static GameAudio Instance { get; private set; }
     public AudioSource Music { get; private set; }
     public AudioSource Effects { get; private set; }
     public AudioSource Interface { get; private set; }
-    const string MusicVolumeKey = "Skybound.MusicVolume";
-    const string SoundVolumeKey = "Skybound.SoundVolume";
     public float MusicVolume { get; private set; }
     public float SoundVolume { get; private set; }
     readonly Dictionary<GameSound, AudioClip> clips = new Dictionary<GameSound, AudioClip>();
@@ -47,8 +44,8 @@ public class GameAudio : MonoBehaviour
         Music = Source(.28f, true, true);
         Effects = Source(.65f, false, false);
         Interface = Source(.6f, false, true);
-        SetMusicVolume(PlayerPrefs.GetFloat(MusicVolumeKey, 1f));
-        SetSoundVolume(PlayerPrefs.GetFloat(SoundVolumeKey, 1f));
+        ApplyMusicVolume(SaveManager.Instance.Data.musicVolume);
+        ApplySoundVolume(SaveManager.Instance.Data.soundVolume);
         foreach (GameSound sound in System.Enum.GetValues(typeof(GameSound)))
         {
             string file = sound == GameSound.Finish ? "win" : sound.ToString().ToLowerInvariant();
@@ -58,17 +55,29 @@ public class GameAudio : MonoBehaviour
     }
     public void SetMusicVolume(float value)
     {
+        ApplyMusicVolume(value);
+        SaveManager.Instance.Data.musicVolume = MusicVolume;
+        SaveManager.Instance.Save();
+    }
+
+    void ApplyMusicVolume(float value)
+    {
         MusicVolume = Mathf.Clamp01(value);
         Music.volume = .28f * MusicVolume;
-        PlayerPrefs.SetFloat(MusicVolumeKey, MusicVolume);
     }
 
     public void SetSoundVolume(float value)
     {
+        ApplySoundVolume(value);
+        SaveManager.Instance.Data.soundVolume = SoundVolume;
+        SaveManager.Instance.Save();
+    }
+
+    void ApplySoundVolume(float value)
+    {
         SoundVolume = Mathf.Clamp01(value);
         Effects.volume = .65f * SoundVolume;
         Interface.volume = .6f * SoundVolume;
-        PlayerPrefs.SetFloat(SoundVolumeKey, SoundVolume);
     }
     AudioSource Source(float volume, bool loop, bool ignorePause)
     {
@@ -83,7 +92,7 @@ public class GameAudio : MonoBehaviour
     void SceneLoaded(Scene scene, LoadSceneMode mode)
     {
         AudioListener.pause = false;
-        string next = scene.name == "MainMenu" ? "menu" : scene.name == "Level2" ? "level2" : "level";
+        string next = scene.name == "MainMenu" ? "menu" : LevelLoader.ActiveData.number == 2 ? "level2" : "level";
         if (track != next || Music.clip == null)
         {
             Music.Stop();

@@ -12,7 +12,7 @@ public class CollectibleCoin : MonoBehaviour
     void Update()
     {
         age += Time.deltaTime;
-        transform.localPosition = origin + Vector3.up * (Mathf.Sin(age * 3) * .08f);
+        transform.localPosition = origin + Vector3.up * (Mathf.Sin(age * LevelLoader.ActiveData.itemStats.coinBobFrequency) * LevelLoader.ActiveData.itemStats.coinBobHeight);
     }
     void OnTriggerEnter2D(Collider2D other)
     {

@@ -5,7 +5,6 @@ using UnityEditor.Build.Reporting;
 
 public static class AndroidBuild
 {
-    [MenuItem("Skybound/Build Android APK")]
     public static void Build()
     {
         EditorUserBuildSettings.buildAppBundle = false;

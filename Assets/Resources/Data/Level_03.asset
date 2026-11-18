@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d4bc6821dd57c146b04c51d00b9414b, type: 3}
+  m_Name: Level_03
+  m_EditorClassIdentifier: Assembly-CSharp::LevelData
+  number: 3
+  title: Level3
+  layoutPrefab: {fileID: 3497700129463855063, guid: 50f5e07a1e70ed340a86a4101551a1af, type: 3}
+  playerSpawn: {x: -0.03, y: -3.3, z: 0}
+  playerStats: {fileID: 11400000, guid: 3a4438bfbfd61ff42943cf84651f7557, type: 2}
+  itemStats: {fileID: 11400000, guid: ba36b1e3a88e9a74ca3517b36148e449, type: 2}
+  enemies:
+  - type: 3
+    position: {x: 3.55, y: 2.35, z: 0}
+    scale: {x: 0.85, y: 0.85, z: 1}
+    artwork: {fileID: 7482667652216324306, guid: 395710c7fbdd4382bf3212a6656f55d9, type: 3}
+    color: {r: 0, g: 0, b: 0, a: 0}
+    stats: {fileID: 0}
+    walls:
+      serializedVersion: 2
+      m_Bits: 0
+  goalAmount: 10
+  timeLimit: 0
+  nextLevel: 0

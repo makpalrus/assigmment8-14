@@ -22,7 +22,7 @@ public class HeartPickup : MonoBehaviour
             return;
 
         PlayerHealth health = other.GetComponentInParent<PlayerHealth>();
-        if (health && health.Heal(1))
+        if (health && health.Heal(LevelLoader.ActiveData.itemStats.heartHealing))
             gameObject.SetActive(false);
     }
 }

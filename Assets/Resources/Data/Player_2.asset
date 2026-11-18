@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3763a49386516d541b6fc2057afb9f4e, type: 3}
+  m_Name: Player_2
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  moveSpeed: 4.6
+  jumpForce: 10
+  groundCheckRadius: 0.2
+  maxHearts: 3
+  fallY: -7
+  invincibilityTime: 1
+  blinkInterval: 0.1
+  hazardDamage: 1

@@ -3,11 +3,11 @@ using UnityEngine;
 public class Charger : EnemyBrain
 {
     enum State { Guard, WindUp, Dash, Recover }
-    [SerializeField] Vector2 waypointOffsets = new Vector2(-1.5f, 1.5f);
-    [SerializeField, Min(.1f)] float dashSpeed = 8f;
-    [SerializeField, Min(.1f)] float dashDistance = 2.8f;
-    [SerializeField, Min(.1f)] float laneTolerance = .65f;
-    [SerializeField, Min(.1f)] float hitReach = .65f;
+    Vector2 waypointOffsets { get { return stats.waypointOffsets; } }
+    float dashSpeed { get { return stats.dashSpeed; } }
+    float dashDistance { get { return stats.dashDistance; } }
+    float laneTolerance { get { return stats.laneTolerance; } }
+    float hitReach { get { return stats.hitReach; } }
 
     State state;
     float left, right, destination;

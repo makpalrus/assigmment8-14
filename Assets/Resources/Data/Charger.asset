@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 364efeba213d55d43821882e40346dee, type: 3}
+  m_Name: Charger
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStats
+  visionRange: 4.5
+  visionAngle: 150
+  windUp: 0.75
+  cooldown: 2
+  damage: 1
+  patrolSpeed: 1.6
+  chaseSpeed: 2.65
+  strikeReach: 1.15
+  waypointOffsets: {x: -3, y: 1.65}
+  scanInterval: 1.1
+  projectileSpeed: 3.8
+  projectileLifetime: 1.5
+  projectileScale: 0.24
+  dashSpeed: 5.8
+  dashDistance: 2.8
+  laneTolerance: 0.85
+  hitReach: 0.65

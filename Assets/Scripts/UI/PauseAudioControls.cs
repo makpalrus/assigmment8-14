@@ -3,8 +3,8 @@ using UnityEngine.UI;
 
 public static class PauseAudioControls
 {
-    static readonly Color TrackColor = new Color32(42, 49, 75, 255);
-    static readonly Color FillColor = new Color32(130, 180, 255, 255);
+    static readonly Color TrackColor = new Color32(185, 152, 86, 255);
+    static readonly Color FillColor = new Color32(107, 184, 38, 255);
 
     public static void Create(Button resume, Button restart, Button menu, GameAudio audio)
     {
@@ -14,19 +14,32 @@ public static class PauseAudioControls
         RectTransform resumeRect = (RectTransform)resume.transform;
         Transform parent = resumeRect.parent;
         Text template = resume.GetComponentInChildren<Text>(true);
-        resumeRect.anchoredPosition = new Vector2(0, 115);
-        PlaceButton(restart, -125);
-        PlaceButton(menu, 125);
+        ForestUI.StyleScreen(parent.parent.gameObject);
+        ForestUI.Panel(parent, new Vector2(800, 840), new Vector2(0, -10));
+        foreach (Text title in parent.GetComponentsInChildren<Text>(true))
+        {
+            if (title.name == "Title")
+                ForestUI.Header(title, new Vector2(0, 305));
+        }
+        resumeRect.anchoredPosition = new Vector2(0, 145);
+        resumeRect.sizeDelta = new Vector2(500, 125);
+        ForestUI.StyleButton(resume);
+        ForestUI.AddIcon(resume.transform, MenuIcon.Play, new Vector2(-160, 0), 44, Color.white);
+        PlaceButton(restart, -145);
+        PlaceButton(menu, 145);
 
-        AddSlider(parent, template, "Music", -5, audio.MusicVolume, audio.SetMusicVolume);
-        AddSlider(parent, template, "Sound", -125, audio.SoundVolume, audio.SetSoundVolume);
+        AddSlider(parent, template, "MUSIC", -5, audio.MusicVolume, audio.SetMusicVolume);
+        AddSlider(parent, template, "SOUND", -140, audio.SoundVolume, audio.SetSoundVolume);
     }
 
     static void PlaceButton(Button button, float x)
     {
         RectTransform rect = (RectTransform)button.transform;
-        rect.anchoredPosition = new Vector2(x, -255);
-        rect.sizeDelta = new Vector2(230, 92);
+        rect.anchoredPosition = new Vector2(x, -285);
+        rect.sizeDelta = new Vector2(270, 110);
+        ForestUI.StyleButton(button);
+        button.GetComponentInChildren<Text>().fontSize = 32;
+        button.GetComponentInChildren<Text>().rectTransform.anchoredPosition = Vector2.zero;
     }
 
     static void AddSlider(Transform parent, Text template, string title, float y, float value,
@@ -37,9 +50,13 @@ public static class PauseAudioControls
         label.font = template.font;
         label.fontSize = 36;
         label.alignment = TextAnchor.MiddleLeft;
-        label.color = Color.white;
+        ForestUI.StyleText(label, ForestUI.Ink);
         label.text = title;
         label.raycastTarget = false;
+        label.rectTransform.anchoredPosition = new Vector2(35, 31);
+        label.rectTransform.sizeDelta = new Vector2(380, 44);
+        ForestUI.AddIcon(row, title == "MUSIC" ? MenuIcon.Music : MenuIcon.Sound,
+            new Vector2(-207, 31), 40, ForestUI.Ink);
 
         RectTransform control = CreateRect(row, "Volume", new Vector2(0, -22), new Vector2(460, 60));
         Image hitArea = control.gameObject.AddComponent<Image>();
@@ -51,14 +68,17 @@ public static class PauseAudioControls
         fill.anchorMax = Vector2.one;
         AddImage(fill, FillColor);
 
-        RectTransform handleArea = CreateRect(control, "Handle Area", Vector2.zero, new Vector2(420, 60));
-        RectTransform handle = CreateRect(handleArea, "Handle", Vector2.zero, new Vector2(38, 48));
-        Image thumb = AddImage(handle, Color.white);
+        RectTransform handleArea = CreateRect(control, "Handle Area", Vector2.zero, new Vector2(420, 30));
+        RectTransform handle = CreateRect(handleArea, "Handle", Vector2.zero, new Vector2(30, 0));
+        MenuIconGraphic knob = handle.gameObject.AddComponent<MenuIconGraphic>();
+        knob.symbol = MenuIcon.Knob;
+        knob.color = ForestUI.Green;
+        knob.raycastTarget = false;
 
         Slider slider = control.gameObject.AddComponent<Slider>();
         slider.fillRect = fill;
         slider.handleRect = handle;
-        slider.targetGraphic = thumb;
+        slider.targetGraphic = knob;
         slider.SetValueWithoutNotify(value);
         slider.onValueChanged.AddListener(onChanged);
     }
