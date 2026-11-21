@@ -52,9 +52,13 @@ The interface has been tested in Unity Device Simulator on a 16:9 phone, a phone
 Visual assets come from the supplied Simple 2D Platformer BE2 pack. The interface uses Unity uGUI and built-in graphics.
 
 Music and sound effects are procedurally synthesized WAV files created with Codex assistance.
-
 ## Mobile interface
 
+<<<<<<< HEAD
+## Mobile interface
+
+=======
+>>>>>>> 7cf4fb4 (clean files)
 - Main menu: press Play to choose a level.
 - HUD: shows hearts and collected coins.
 - Controls: use the joystick to move and the Jump button to jump.
