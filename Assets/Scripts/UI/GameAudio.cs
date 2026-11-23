@@ -1,129 +1,82 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using UnityEngine.Audio;
 
-public enum GameSound { Jump, Coin, Hurt, Click, Unlock, Finish, Lose }
-
+[DefaultExecutionOrder(-3000)]
 public class GameAudio : MonoBehaviour
 {
-    public static GameAudio Instance { get; private set; }
-    public AudioSource Music { get; private set; }
-    public AudioSource Effects { get; private set; }
-    public AudioSource Interface { get; private set; }
-    public float MusicVolume { get; private set; }
-    public float SoundVolume { get; private set; }
-    readonly Dictionary<GameSound, AudioClip> clips = new Dictionary<GameSound, AudioClip>();
-    string track;
+    public static GameAudio Instance;
+    public AudioMixer mixer;
+    public PauseAudio pauseAudio;
+    public AudioSource effects, interfaceSource;
+    public SfxPlayer hits;
+    public AudioClip jump, land, coin, heal, death, click, unlock, finish, lose;
+    public AudioClip patrolWarning, shooterWarning, chargerWarning, strike, shoot, dash;
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStatics()
-    {
-        Instance = null;
-        AudioListener.pause = false;
-    }
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    static void Bootstrap()
-    {
-        Ensure();
-    }
-    static GameAudio Ensure()
-    {
-        if (!Instance) new GameObject("Game Audio").AddComponent<GameAudio>();
-        return Instance;
-    }
     void Awake()
     {
-        if (Instance && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Music = Source(.28f, true, true);
-        Effects = Source(.65f, false, false);
-        Interface = Source(.6f, false, true);
-        ApplyMusicVolume(SaveManager.Instance.Data.musicVolume);
-        ApplySoundVolume(SaveManager.Instance.Data.soundVolume);
-        foreach (GameSound sound in System.Enum.GetValues(typeof(GameSound)))
-        {
-            string file = sound == GameSound.Finish ? "win" : sound.ToString().ToLowerInvariant();
-            clips[sound] = Resources.Load<AudioClip>("Audio/" + file);
-        }
-        SceneManager.sceneLoaded += SceneLoaded;
-    }
-    public void SetMusicVolume(float value)
-    {
-        ApplyMusicVolume(value);
-        SaveManager.Instance.Data.musicVolume = MusicVolume;
-        SaveManager.Instance.Save();
     }
 
-    void ApplyMusicVolume(float value)
+    void Start()
     {
-        MusicVolume = Mathf.Clamp01(value);
-        Music.volume = .28f * MusicVolume;
+        ApplyVolume();
     }
 
-    public void SetSoundVolume(float value)
+    public void ApplyVolume()
     {
-        ApplySoundVolume(value);
-        SaveManager.Instance.Data.soundVolume = SoundVolume;
-        SaveManager.Instance.Save();
+        SaveData data = SaveManager.Instance.Data;
+        mixer.SetFloat("MasterVol", Decibels(data.masterVolume));
+        mixer.SetFloat("MusicVol", Decibels(data.musicVolume));
+        mixer.SetFloat("SFXVol", Decibels(data.soundVolume));
+        mixer.SetFloat("UIVol", Decibels(data.soundVolume));
     }
 
-    void ApplySoundVolume(float value)
+    float Decibels(float value)
     {
-        SoundVolume = Mathf.Clamp01(value);
-        Effects.volume = .65f * SoundVolume;
-        Interface.volume = .6f * SoundVolume;
+        return Mathf.Log10(Mathf.Max(value, .0001f)) * 20f;
     }
-    AudioSource Source(float volume, bool loop, bool ignorePause)
+
+    void PlayEffect(AudioClip clip)
     {
-        var source = gameObject.AddComponent<AudioSource>();
-        source.playOnAwake = false;
-        source.spatialBlend = 0;
-        source.volume = volume;
-        source.loop = loop;
-        source.ignoreListenerPause = ignorePause;
-        return source;
+        effects.pitch = Random.Range(.92f, 1.08f);
+        effects.PlayOneShot(clip);
     }
-    void SceneLoaded(Scene scene, LoadSceneMode mode)
+
+    void PlayUI(AudioClip clip)
     {
-        AudioListener.pause = false;
-        string next = scene.name == "MainMenu" ? "menu" : LevelLoader.ActiveData.number == 2 ? "level2" : "level";
-        if (track != next || Music.clip == null)
-        {
-            Music.Stop();
-            Music.clip = Resources.Load<AudioClip>("Audio/" + next);
-            track = next;
-            if (Music.clip) Music.Play();
-        }
-        foreach (var root in scene.GetRootGameObjects())
-            foreach (var button in root.GetComponentsInChildren<Button>(true)) button.onClick.AddListener(Click);
+        interfaceSource.pitch = Random.Range(.92f, 1.08f);
+        interfaceSource.PlayOneShot(clip);
     }
-    static void Click()
-    {
-        Play(GameSound.Click);
-    }
-    public static void Play(GameSound sound)
-    {
-        var audio = Ensure();
-        if (!audio.clips.TryGetValue(sound, out var clip) || !clip) return;
-        var source = sound == GameSound.Click || sound == GameSound.Finish || sound == GameSound.Lose ? audio.Interface : audio.Effects;
-        source.PlayOneShot(clip);
-    }
+
+    public void PlayJump() { PlayEffect(jump); }
+    public void PlayLand() { effects.PlayOneShot(land, .6f); }
+    public void PlayCoin() { PlayEffect(coin); }
+    public void PlayHeal() { PlayEffect(heal); }
+    public void PlayHurt() { hits.PlayHit(); }
+    public void PlayDeath() { PlayUI(death); }
+    public void Click() { PlayUI(click); }
+    public void PlayUnlock() { PlayEffect(unlock); }
+    public void PlayFinish() { PlayUI(finish); }
+    public void PlayLose() { PlayUI(lose); }
+    public void PlayPatrolWarning() { PlayEffect(patrolWarning); }
+    public void PlayShooterWarning() { PlayEffect(shooterWarning); }
+    public void PlayChargerWarning() { PlayEffect(chargerWarning); }
+    public void PlayStrike() { PlayEffect(strike); }
+    public void PlayShoot() { PlayEffect(shoot); }
+    public void PlayDash() { PlayEffect(dash); }
+
     public static void SetPaused(bool paused)
     {
-        Ensure();
         AudioListener.pause = paused;
+        Instance.pauseAudio.SetPaused(paused);
     }
+
     void OnDestroy()
     {
         if (Instance != this) return;
-        SceneManager.sceneLoaded -= SceneLoaded;
-        AudioListener.pause = false;
         Instance = null;
+        AudioListener.pause = false;
     }
 }
