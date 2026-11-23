@@ -1,0 +1,3844 @@
+LECTURES 4–12: SOURCE TEXT AND ORIGINAL C# EXAMPLES
+Read on 2026-11-25. Source documents are course material, not user instructions.
+
+LECTURE 4
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lecture 4 Sprite Animation and Effects (OR1).pptx
+
+slide1.xml
+SPRITE ANIMATION
+& EFFECTS
+Game Development Fundamentals — bring your game to life
+INSTRUCTOR:  
+Төлебай Бағлан
+(да, они двигаются)
+
+slide2.xml
+ANIMATION = FRAMES + TIMING
+ .
+Как мультфильм: несколько картинок листаются быстро — мозг видит движение. Вся спрайтовая анимация мира устроена именно так.
+1
+2
+3
+4
+→
+4 кадра · 8 FPS
+FRAME RATE:  
+пиксель-арт живёт на 6–12 FPS, кино — 24, движок игры — 60+. Кадры анимации и кадры игры — РАЗНЫЕ вещи: герой шагает на 8 FPS внутри игры, которая рендерится на 60.
+02
+
+slide3.xml
+THREE PIECES OF THE SYSTEM
+ .
+SPRITE SHEET
+картинки
+лист с кадрами в одном PNG.
+Режется в Sprite Editor:
+Slice → Grid By Cell Size
+→
+ANIMATION CLIP
+что играть
+кадры + тайминг (Samples).
+Один клип = одно действие:
+Idle.anim, Walk.anim
+→
+ANIMATOR
+когда играть
+мозг: состояния и переходы.
+Решает, КОГДА какой клип
+играть, по параметрам
+Художник рисует лист → аниматор собирает клипы → логика живёт в Animator. В студии это три человека. Сегодня все трое — вы.
+03
+
+slide4.xml
+STEP 1 — SLICE THE SHEET
+ .
+наши листы: idle 4к · coin 6к · fire 6к (+walk, +jump)
+Sprite Mode = Multiple
+говорим Unity: это ЛИСТ, не одна картинка. Забыть — грабли №1
+Pixels Per Unit = 128
+кадр 128 px = 1 юнит мира
+Filter = Point, Compression = None
+иначе пиксель-арт замылится
+Sprite Editor → Slice
+Grid By Cell Size → 128×128 → Apply. Лист рассыпался на кадры
+04
+
+slide5.xml
+STEP 2 — ANIMATION CLIP
+ .
+Вау-приём: выделите ВСЕ кадры листа → перетащите на сцену → Unity сам создаст клип, Animator и объект. Персонаж шагает. Ноль кода, ноль настроек.
+Animation window (Ctrl+6)
+таймлайн кадров клипа. Здесь живёт тайминг
+Samples = 8
+сколько кадров анимации в секунду. Пиксель-арт: 6–12. Попробуйте 2 и 24 — почувствуйте разницу
+Loop Time ✓
+клип повторяется. Снять галочку = проиграется один раз и замрёт (грабли №3)
+Один клип = одно действие
+Idle.anim, Walk.anim, Jump.anim — не сваливайте всё в один клип
+Idle.anim / Walk.anim
+05
+
+slide6.xml
+STEP 3 — ANIMATOR: STATES & TRANSITIONS
+ .
+IDLE
+default state
+WALK
+loop
+Speed > 0.01  →
+←  Speed < 0.01
+параметр Speed (Float) —
+единственный мост код → Animator
+ГЛАВНОЕ ПРАВИЛО:  Has Exit Time = OFF.  
+Has Exit Time означает «доиграй клип до конца, потом переключайся». Для реакции на ввод игрока — всегда выключаем, иначе герой «дошагивает» после остановки. Грабли №2 — на них наступают все.
+06
+
+slide7.xml
+STEP 4 — THE CODE: THREE LINES
+ .
+К контроллеру из урока физики добавляются ровно три строки. Код НЕ включает клипы — он сообщает факты, Animator решает сам.
+anim = GetComponent<Animator>();
+   // в Start(), как rb
+sr = GetComponent<SpriteRenderer>();
+
+
+
+// в Update(), после движения:
+
+anim.SetFloat("Speed", Mathf.Abs(x));
+   // 1. факт: как быстро бежим
+if (x != 0) sr.flipX = x < 0;
+   // 2. разворот влево/вправо
+anim.SetBool("Grounded", grounded);
+   // 3. для будущего Jump
+SetFloat
+передать число в параметр Animator
+flipX
+зеркалим спрайт — не рисуем «walk влево» отдельно
+Готовый скрипт
+в наборе урока: Scripts/PlayerController.cs
+Стоишь — моргает. Бежишь — шагает. Развернулся — flipX. Всё.
+07
+
+slide8.xml
+ENVIRONMENT ANIMATION — ZERO CODE
+ .
+Монета и огонь не требуют ни Animator-переходов, ни скриптов: перетащил кадры → клип с Loop Time → готово.
+CoinSpin.anim — 6 кадров, 10 FPS
+та же монета из урока физики — теперь крутится
+Fire.anim — 6 кадров, 11 FPS
+покадровый огонь — контроль каждого языка пламени
+08
+
+slide9.xml
+EFFECTS, WAY 2 — PARTICLE SYSTEM
+ .
+Сотни маленьких частиц с физикой и случайностью. GameObject → Effects → Particle System — и 5 настроек:
+Start Lifetime = 0.6   
+— частица живёт полсекунды
+Start Speed = 2, Shape: Cone 8°   
+— летят вверх узким конусом
+Emission = 30   
+— тридцать частиц в секунду
+Color over Lifetime   
+— жёлтый → красный → прозрачный
+Size over Lifetime   
+— рождается большой — умирает точкой
+FRAMES vs PARTICLES
+Кадры — контроль художника.
+
+пиксель-огонь, вода, персонажи
+
+
+Частицы — случайность физики.
+
+дым, искры, магия, дождь, взрывы
+
+
+В настоящих играх — вместе:
+
+кадровый костёр + частицы искр сверху
+09
+
+slide10.xml
+PRACTICE TODAY + КЛАССИКА ГРАБЛЕЙ
+ .
+Оживляем ВАШУ сцену из Assignment 4:
+1. Герой: Idle + Walk + переходы по Speed + flipX
+2. Монеты крутятся (клип без кода)
+3. Огонь-ловушка: кадры ИЛИ Particle System — на выбор
+4. Бонус ⭐: состояние Jump через Grounded
+⚠ ГРАБЛИ
+1. Sprite Mode не Multiple → лист = одна картинка
+
+2. Has Exit Time ON → герой «дошагивает»
+
+3. Loop Time OFF → клип замер после 1 раза
+
+4. Samples 60 на 4 кадрах → мельтешение
+Набор: спрайты + скрипт + план — в Canvas/Discord
+10
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lectures 5-6. Scripting (interactive).html
+SHA256: 028A01565C079FFB866CCFC7848A0B5C9D03AB87CE26D58B0E253BDEA851CF9A
+ Lectures 5–6 — Scripting 
+ 
+
+
+ 
+
+ 
+ 
+   
+     Game Development Fundamentals · Lectures 5–6 · Narxoz University
+
+     SCRIPTING . 
+
+     NINE TOOLS OF THE TRADE
+
+     время, спавн, корутины, наследование — ваш платформер становится игрой
+
+     
+       
+       
+       
+       
+       INSTRUCTOR:  Төлебай Бағлан 
+
+    
+
+  
+
+   листай: → ← · клик по краям · свайп
+
+
+
+
+ 
+ 
+   THE MAP .  девять приёмов — одна survival-игра
+
+    
+      1   Стрельба  Instantiate · Time.time · Destroy
+
+
+      2   Спавнер  InvokeRepeating · Random.Range
+
+
+      3   Бомба  Invoke
+
+
+      4   Неуязвимость  IEnumerator · WaitForSeconds
+
+
+      5   Health  GetComponent<T>
+
+
+      6   Наследование  virtual · override · Hazard×3
+
+
+      7   Рестарт  SceneManager.LoadScene
+
+
+      8   Таймер  Time.deltaTime
+
+
+      9   Звук  AudioSource.PlayOneShot
+
+
+  
+
+   К концу недели всё это работает в ВАШЕЙ игре. Задание A6 — те же девять шагов.
+
+  
+
+   📘 документация:  Unity Learn — Beginner Scripting (официальный курс) 
+
+
+
+
+ 
+ 
+    1.  Стрельба  Instantiate · Time.time · Destroy(obj, t) 
+
+    
+     
+ // Shooter.cs — на герое  
+ public   GameObject  bulletPrefab; 
+ public float  cooldown =  0.3f ; 
+ float  nextShot;  
+ void  Update() 
+{ 
+   if  (Input.GetKey(KeyCode.X) &&  Time.time >= nextShot ) 
+  { 
+     nextShot = Time.time + cooldown;  
+     Instantiate (bulletPrefab, transform.position, Quaternion.identity); 
+  } 
+}
+    
+
+     
+       
+ // Bullet.cs — на префабе пули  
+ void  Start() 
+{ 
+  GetComponent< Rigidbody2D >().velocity = transform.right *  12f ; 
+   Destroy (gameObject,  3f );  // сам умрёт  
+}
+      
+
+        Правило мира Unity:  всё, что родилось Instantiate-ом, обязано умереть Destroy-ем.
+      Забыл — через минуту в сцене тысяча пуль и 5 FPS.
+
+    
+
+  
+
+   📘 документация:  Object.Instantiate  ·  Object.Destroy 
+
+  
+
+
+
+
+ 
+ 
+    2–3.  Спавнер и бомба  InvokeRepeating · Random.Range · Invoke 
+
+    
+     
+ // Spawner.cs — пустой объект над сценой  
+ void  Start() 
+{ 
+   // (метод, первый раз через, интервал)  
+   InvokeRepeating (nameof(Spawn),  1f ,  2f ); 
+}  
+ void  Spawn() 
+{ 
+   float  x =  Random .Range( -8f ,  8f ); 
+  Instantiate(hazardPrefab,  new   Vector3 (x,  6f , 0), Quaternion.identity); 
+}
+    
+
+     
+       
+ // Bomb.cs — упала, тикает, взрывается  
+ void  Start() 
+{ 
+   Invoke (nameof(Explode),  2f );  // ОДИН раз через 2 сек  
+}  
+ void  Explode() 
+{ 
+   // вспышка, звук, урон — и:  
+  Destroy(gameObject); 
+}
+      
+
+        Invoke vs InvokeRepeating:  один отложенный выстрел против метронома.
+      Отменить оба — CancelInvoke().
+
+    
+
+  
+
+   📘 документация:  MonoBehaviour.InvokeRepeating  ·  MonoBehaviour.Invoke  ·  Random.Range 
+
+  
+
+
+
+
+ 
+ 
+    4.  Корутина  IEnumerator · yield return · StartCoroutine 
+
+    
+     
+ IEnumerator  Invincibility() 
+{ 
+  invincible =  true ; 
+   for  ( int  i = 0; i < 10; i++) 
+  { 
+    sr.enabled = !sr.enabled;  // мигание  
+     yield return new WaitForSeconds(0.2f);  
+  } 
+  sr.enabled =  true ; 
+  invincible =  false ; 
+}  
+ // запуск:  StartCoroutine(Invincibility());
+    
+
+     
+       
+
+       🧡🧡🧡
+
+       TAKE DAMAGE 
+       invincible = false
+
+        Суть:  yield return — «продолжи отсюда через 0.2 сек»,
+      игра НЕ останавливается. Invoke такой цикл не умеет.
+
+    
+
+  
+
+   📘 документация:  Manual: Coroutines  ·  WaitForSeconds 
+
+  
+
+
+
+
+ 
+ 
+    5.  Health — скрипты говорят друг с другом  GetComponent<T> 
+
+    
+     
+ // Health.cs — на герое  
+ public int  hp = 3;  
+ public void  TakeDamage( int  dmg) 
+{ 
+   if  (invincible)  return ; 
+  hp -= dmg; 
+  StartCoroutine(Invincibility()); 
+   if  (hp <= 0) GameOver(); 
+}  
+ public void  Heal( int  a) { hp += a; }
+    
+
+     
+       
+ // у опасности: взять ЧУЖОЙ скрипт  
+ // и вызвать его публичный метод  
+ void  OnCollisionEnter2D( Collision2D  c) 
+{ 
+   if  (c.gameObject.CompareTag( "Player" )) 
+    c.gameObject. GetComponent<Health>()  
+      .TakeDamage(1); 
+}
+      
+
+        Это главный мост Unity:  GetComponent — способ одному скрипту
+      дёрнуть метод другого. До сих пор ваши скрипты жили поодиночке.
+
+    
+
+  
+
+   📘 документация:  GameObject.GetComponent 
+
+  
+
+
+
+
+ 
+ 
+    6.  Наследование — вы знаете это из Java  virtual · override · base 
+
+    
+     
+ public class   Hazard  : MonoBehaviour 
+{ 
+   // virtual — наследник МОЖЕТ переопределить  
+   protected virtual void  OnHitPlayer( Health  p) 
+  { p.TakeDamage(1); } 
+}  
+ public class   Rock  : Hazard { } 
+ public class   BombHazard  : Hazard 
+{  protected override void  OnHitPlayer( Health  p) { p.TakeDamage(2); } } 
+ public class   Heart  : Hazard 
+{  protected override void  OnHitPlayer( Health  p) { p.Heal(1); } }  
+ // Spawner: один массив — три судьбы  
+ public   Hazard [] prefabs; 
+Instantiate(prefabs[ Random .Range(0, 3)], ...);
+    
+
+     
+       
+          Java  C# в Unity 
+
+          всё виртуально  virtual + override — явно 
+
+          extends / implements  одно двоеточие  : 
+
+          super.method()  base.Method() 
+
+          final  sealed 
+
+       
+       
+         SPAWN prefabs[?] 
+          
+
+      
+
+       
+         
+         
+         
+      
+
+        Вы наследуетесь с первого дня:  каждый ваш скрипт — это «: MonoBehaviour».
+
+    
+
+  
+
+   📘 документация:  C#: Inheritance (Microsoft)  ·  ключевое слово virtual 
+
+  
+
+
+
+
+ 
+ 
+    7–8.  Рестарт и таймер  SceneManager.LoadScene · Time.deltaTime 
+
+    
+     
+ using  UnityEngine.SceneManagement;  
+ void  GameOver() 
+{ 
+   SceneManager .LoadScene( 
+    SceneManager.GetActiveScene().name); 
+}  
+ // сцена перезагрузилась — ВСЁ с нуля.  
+ // и счёт тоже. как сохранить — A7… нет, неделя 7+ 
+    
+
+     
+       
+ // SurvivalTimer.cs  
+ float  t;  
+ void  Update() 
+{ 
+  t +=  Time.deltaTime ;  // секунды за кадр  
+   if  (t >=  60f ) 
+    gateAnimator.SetBool( "Open" ,  true ); 
+}
+      
+
+        Связка недель:  победа по таймеру открывает ворота из задания по анимации.
+      Ваша игра растёт, а не начинается заново.
+
+    
+
+  
+
+   📘 документация:  SceneManager.LoadScene  ·  Time.deltaTime 
+
+  
+
+
+
+
+ 
+ 
+    9.  Звук  AudioSource.PlayOneShot 
+
+    
+     
+ public   AudioClip  shootClip, hurtClip; 
+ AudioSource  src;  
+ void  Start() { src = GetComponent< AudioSource >(); }  
+ // в момент выстрела:  
+src. PlayOneShot (shootClip); 
+ // десять пуль подряд — десять звуков, без обрывов 
+    
+
+     
+        Где взять звуки за минуту  
+        jfxr.frozenfractal.com  — генератор ретро-SFX в браузере: Randomize → скачал wav. 
+       kenney.nl/assets  — audio-паки, CC0.  freesound.org  — всё остальное. 
+
+        Ловушка:  Play On Awake — выключить, иначе звук выстрела грянет на старте сцены.
+
+    
+
+  
+
+   📘 документация:  AudioSource.PlayOneShot 
+
+  
+
+
+
+
+ 
+ 
+   TRY IT NOW .  все девять приёмов в одной демке
+
+    
+     
+       
+          
+          ▶ PLAY — A/D бег · X огонь 
+
+      
+
+       
+         
+           ◀  ▶ 
+        
+
+         🧡  3  · t =  0.0 /20 ·  menu 
+
+         🔥 FIRE 
+      
+
+    
+
+     
+       
+       Assignment 6 — эти же 9 шагов, у себя
+
+    
+
+  
+
+
+
+
+
+ 
+ 
+   
+     
+       NEXT . 
+
+       Неделя 7 — Input System: мобильный джойстик + клавиатура
+
+       Семестр движется к мобильной игре.
+
+       
+    
+
+  
+
+
+
+
+
+
+
+ 
+
+ 
+
+    
+  1 / ? 
+
+
+ ← → листать
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lecture 7. Input System (interactive).html
+SHA256: CEA69F225338E1848F448FE43EBF872E0D6208C22D22FF813B818E6B392DDF05
+ Lecture 7 — Input System 
+ 
+
+
+ 
+
+ 
+ 
+   
+     Game Development Fundamentals · Lecture 7 · Narxoz University
+
+     INPUT SYSTEM . 
+
+     ONE ACTION — EVERY DEVICE
+
+     клавиатура, мышь, геймпад и экранный джойстик — один код
+
+     
+       
+       
+       INSTRUCTOR:  Төлебай Бағлан 
+
+    
+
+  
+
+   листай: → ← · клик по краям · свайп
+
+
+
+
+ 
+ 
+   THE PROBLEM .  ваш ввод не доедет до телефона
+
+   
+     
+       
+ float  x = Input.GetAxisRaw( "Horizontal" ); 
+ if  (Input.GetKeyDown(KeyCode.Space) && grounded) 
+    Jump(); 
+ if  (Input.GetKey(KeyCode.X)) Fire();  
+ // на телефоне клавиш НЕТ.  
+ // Input.GetKey вернёт false — навсегда. 
+         DEAD ON MOBILE
+
+      
+
+       
+          🧱 Жёстко зашитые клавиши   KeyCode.Space — конкретная кнопка конкретного устройства 
+
+          📵 Про тач — ничего   экранный джойстик старому Input неизвестен 
+
+          🔁 Новое устройство = переписать код   геймпад? начинай сначала 
+
+      
+
+    
+
+     Цель семестра — мобильная игра. Решение Unity: пакет Input System — действия вместо клавиш.
+
+  
+
+
+
+
+ 
+ 
+   THE BIG IDEA .  devices → bindings → action → code
+
+   Схема живая:  нажимай W A S D  — или потяни стик мышью. Смотри, как сигнал бежит к коду.
+
+    
+     
+        ⌨️ Keyboard
+ W A S D
+
+
+        🖱 Mouse
+ LMB
+
+
+        🎮 Gamepad
+ Left Stick
+
+
+        📱 On-Screen Stick
+ эмулирует Gamepad
+
+          
+
+
+      
+
+    
+
+     
+       BINDINGS
+
+       список «что слушать» у каждого действия
+
+    
+
+     
+       ACTION
+
+       "Move"
+
+       Vector2
+
+    
+
+     
+       ТВОЙ КОД
+
+       OnMove(v)
+
+       Move = ( 0.00 ,  0.00 )
+
+    
+
+  
+
+
+   Код не знает, откуда пришёл вектор. Новое устройство = новый биндинг. Код не трогаем.
+
+
+
+
+ 
+ 
+   INSTALL .  и три ловушки
+
+   
+      1 · Package Manager
+ Unity Registry →  Input System  → Install
+
+
+      2 · Вопрос про бэкенды → YES
+ редактор  перезапустится  — ловушка №1: это нормально, не паникуй
+
+
+      3 · Active Input Handling = Both
+ Project Settings → Player. Старые скрипты живут, пока мигрируем — ловушка №2: забыть
+
+
+      4 · EventSystem — ловушка №3
+ жёлтая кнопка  «Replace with InputSystemUIInputModule»  → нажать, иначе UI-кнопки МЕРТВЫ
+
+
+  
+
+   Три ловушки = 90% паники этой недели. Вы предупреждены.
+
+
+
+
+ 
+ 
+   INPUT ACTIONS .  карта смысла
+
+    
+     
+ Action Map: Player  
+   Move   (Value · Vector2) 
+    ├ 2D Vector Composite → W / A / S / D 
+    ├ 2D Vector Composite → стрелки 
+    └  Left Stick [Gamepad]  ← сюда встанет экранный стик  
+   Jump   (Button) 
+    ├ Space [Keyboard] 
+    └  Button South [Gamepad]  ← экранная кнопка JUMP  
+   Fire   (Button) 
+    ├ Left Button [Mouse]  ├ X [Keyboard] 
+    └  Button West [Gamepad]  ← экранная кнопка FIRE 
+    
+
+     
+        Value vs Button  
+        Value  — значение каждый кадр: вектор движения.  Button  — событие «нажалось»: прыжок, выстрел. 
+
+        Composite — зачем  
+       W/A/S/D — 4 клавиши, не вектор. Composite склеивает их в один Vector2: W=(0,1), W+D=(0.7,0.7). Стик делает то же сам — потому они взаимозаменяемы. 
+
+    
+
+  
+
+
+
+
+
+ 
+ 
+   PLAYERINPUT .  контроллер теряет клавиши
+
+    
+     
+       БЫЛО
+
+       
+ float x = Input.GetAxisRaw("Horizontal"); 
+if (Input.GetKeyDown(KeyCode.Space) && grounded) 
+    Jump(); 
+if (Input.GetKey(KeyCode.X)) Fire(); 
+      
+
+    
+
+     
+       СТАЛО
+
+       
+ using  UnityEngine.InputSystem;  
+ Vector2  move; 
+ public void  OnMove( InputValue  v) { move = v.Get< Vector2 >(); } 
+ public void  OnJump() {  if  (grounded) rb.velocity = ...; } 
+ public void  OnFire() { shooter.Shoot(); }  
+ // в Update осталась только физика:  
+ // rb.velocity = move.x * speed 
+      
+
+    
+
+  
+
+   
+      Send Messages   PlayerInput ищет методы On+имя действия 
+
+      InputValue   конверт: v.Get<Vector2>() для Move 
+
+      Критерий задания   ни одного Input.Get… в коде — проверяется на защите 
+
+  
+
+
+
+
+
+ 
+ 
+   THE TRICK .  экран притворяется геймпадом
+
+   
+     
+       
+       →
+
+        On-Screen Stick
+ <Gamepad>/leftStick
+
+
+       →
+
+        Unity думает: «подключён геймпад»   биндинг Left Stick [Gamepad] ловит и экранный стик, и настоящий геймпад 
+
+    
+
+     
+        UI-элемент  Компонент  Control Path  Биндинг в Actions 
+
+        Knob (ручка стика)  On-Screen Stick  <Gamepad>/leftStick  Move ← Left Stick 
+
+        Кнопка JUMP  On-Screen Button  <Gamepad>/buttonSouth  Jump ← Button South 
+
+        Кнопка FIRE  On-Screen Button  <Gamepad>/buttonWest  Fire ← Button West 
+
+     
+     Один набор биндингов = экранный джойстик + бонусом настоящий геймпад.
+
+  
+
+
+
+
+ 
+ 
+   MOBILE LAYOUT .  где живут большие пальцы
+
+   
+     
+       
+
+       StickBG + Knob On-Screen Stick Movement Range 80
+
+
+       JUMP  FIRE On-Screen Button ×2
+
+
+       anchor: Bottom-Left 
+       anchor: Bottom-Right 
+    
+
+     
+        Canvas Scaler   Scale With Screen Size · 1920×1080 · Match 0.5 
+
+        Device Simulator   Window → General → Device Simulator: реальный телефон, вырезы 
+
+        Графика: Kenney   Mobile Controls, CC0 — 45 спрайтов, рисовать не надо 
+
+    
+
+  
+
+
+
+
+ 
+ 
+   TRY IT NOW .  A/D — бег · W — прыжок · X — огонь · и джойстик
+
+    
+     
+       
+          
+          ▶ PLAY 
+
+      
+
+       
+          
+
+
+         
+           Move = ( 0.00 ,  0.00 )
+
+           
+             Keyboard 
+             On-Screen Stick 
+          
+
+        
+
+         
+           JUMP 
+           FIRE 
+        
+
+      
+
+    
+
+     
+       
+       Assignment 7 — наведи камеру
+
+    
+
+  
+
+
+
+
+
+ 
+ 
+   
+     
+       NEXT WEEK . 
+
+       UI — мобильный HUD: сердечки, счёт, кнопка паузы
+
+       Семестр движется к мобильной игре. Каждая неделя — ещё один её кусок.
+
+       
+    
+
+  
+
+
+
+
+
+
+
+ 
+
+ 
+
+    
+  1 / ? 
+
+
+ ← → листать
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lectures 8-9. Mobile UI and Pre-production (interactive).html
+SHA256: E39FEC4EB4735C9E4A81D3D8816642566B2E836BA40D29134A4F7C0083CEC32D
+ 
+ 
+ 
+ Mobile UI and Pre-production 
+ 
+ 
+
+
+ 
+ 
+   
+     Game Development Fundamentals · Weeks 8–9 · Lecture
+
+     MOBILE UI + KICKOFF . 
+
+     Part A: a UI that fits every phone. Part B: plan the team game you will publish in week 15.
+
+     
+       Unity 6 · uGUI · Device Simulator 
+       GDD · Core loop · Git + GitHub 
+       Assignment 8–9:  Team Game Kickoff  · 25 points 
+    
+
+  
+
+   
+       
+
+
+
+     
+
+  
+
+ 
+
+  Part A  Mobile UI · week 8
+
+
+  1.  One UI, many screens
+
+ You design the UI once, at 1920 × 1080. Players open it on a long iPhone with a notch, a 20:9 Android and a 4:3 tablet.
+Three settings decide whether it still works:  Canvas Scaler ,  anchors  and the  safe area .
+Switch them below and watch the HUD.
+
+
+ 
+     
+
+
+
+   
+     Device 
+     
+       16:9 · 1920×1080 
+       19.5:9 · iPhone 2532×1170 
+       20:9 · Android 2400×1080 
+       4:3 · iPad 2048×1536 
+    
+
+     Canvas Scaler 
+     
+       Constant Pixel Size 
+       Scale With Screen Size · Match 1 
+    
+
+     Anchors 
+     
+       All in the center (default) 
+       To the corners 
+    
+
+     Safe area 
+     
+       Off 
+       SafeArea panel 
+    
+
+  
+
+   
+
+   
+
+
+
+
+  2.  Canvas Scaler: the same size on every phone
+
+ 
+   
+      Constant Pixel Size  keeps every button the same number of pixels. A sharp 2532 px phone shows it smaller than an old 1920 px one.
+
+      Scale With Screen Size  scales the whole UI from a reference resolution. Use it for every mobile game.
+
+     Landscape game: match the height (Match = 1), extra width becomes extra space at the sides.
+    Portrait game: reference 1080 × 1920, match the width (Match = 0).
+
+  
+
+    
+      Canvas Scaler field  Landscape game 
+
+      UI Scale Mode  Scale With Screen Size 
+
+      Reference Resolution  1920 × 1080 
+
+      Screen Match Mode  Match Width Or Height 
+
+      Match  1 (height) 
+
+      Reference Pixels Per Unit  100 
+
+   
+
+
+
+
+  3.  Anchors: pin each element to its corner
+
+ 
+    
+     
+       
+       
+      ♥♥♥ top-left 
+      II 
+      bottom-left 
+      JUMP 
+     LEVEL 2 · center 
+      
+   
+
+   
+     The anchor says which point of the parent the element follows when the screen changes.
+
+     
+        HUD in corners:  hearts → top-left, pause → top-right, joystick → bottom-left, buttons → bottom-right.
+
+        Title and pop-ups:  center.
+
+        Full-screen panels and backgrounds:  stretch (all four anchors to the corners).
+
+       In the Rect Transform anchor menu hold  Shift  +  Alt  while you click a preset: it sets the pivot and the position too.
+
+     
+  
+
+
+
+
+  4.  Safe area: notches, holes and rounded corners
+
+ 
+   
+     Modern phones lose parts of the screen to a notch, a camera hole, rounded corners and the home bar.
+     Screen.safeArea  is the rectangle that is really visible. Put all HUD inside one panel that follows it.
+
+     Background art stays full screen. Only buttons and text go inside the safe panel.
+
+     Hierarchy:  Canvas  →  Background  (stretch) +  SafeArea  (this script) → your HUD.
+
+  
+
+  using  UnityEngine;
+
+[RequireComponent( typeof (RectTransform))]
+ public class  SafeArea : MonoBehaviour
+{
+    RectTransform panel;
+    Rect last;
+
+     void  Awake() { panel = GetComponent<RectTransform>(); Apply(); }
+     void  Update() {  if  (Screen.safeArea != last) Apply(); }
+
+     void  Apply()
+    {
+        last = Screen.safeArea;
+        Vector2 min = last.position;
+        Vector2 max = last.position + last.size;
+        min.x /= Screen.width;  min.y /= Screen.height;
+        max.x /= Screen.width;  max.y /= Screen.height;
+        panel.anchorMin = min;    // the panel's corners follow 
+        panel.anchorMax = max;    // the visible part of the screen 
+    }
+}
+
+
+
+
+  5.  Made for thumbs
+
+ 
+    
+     
+     
+     
+     
+     easy · move 
+     easy · jump, fire 
+     hard to reach · info only 
+     center · keep it for the game 
+   
+
+   
+     
+        Touch target at least 48 dp  (Android) / 44 pt (iOS), about 9 mm. In a 1920 × 1080 reference that is roughly 120 × 120 px.
+
+        Controls in the bottom corners , where thumbs rest. Information (hearts, score) at the top.
+
+        Pause in a top corner,  small but at least 48 dp, away from the jump button.
+
+        Text at least ~36 px  in the reference resolution, with an outline or a dark plate on top of busy art.
+
+     
+  
+
+
+
+
+  6.  Screens and flow
+
+  
+       
+   
+      Main Menu 
+      Level + HUD 
+      Pause 
+      Win / Lose 
+      Settings 
+   
+   
+        
+      
+   
+    Play  II  ⚙  Menu button  
+ 
+
+  public  GameObject pausePanel;
+
+ public void  SetPaused( bool  paused)
+{
+    pausePanel.SetActive(paused);
+    Time.timeScale = paused ? 0f : 1f;    // physics and Update movement stop 
+}
+
+ public void  ToMenu() { Time.timeScale = 1f; SceneManager.LoadScene("MainMenu"); }
+
+ UI animations in a paused game: set the Animator's Update Mode to Unscaled Time. Buttons use the Input System UI Input Module from week 7.
+
+
+  7.  Test without a phone: Device Simulator
+
+ 
+    Open
+ Window → General → Device Simulator. Pick a device from the list.
+
+
+    Check
+ Rotate it, turn on Safe Area, try three devices: 16:9, a notch phone, a tablet.
+
+
+    Then
+ Build to a real phone at least once a week. The simulator does not feel your thumb.
+
+
+
+
+
+  Part B  Pre-production · week 9
+
+
+  8.  From now on you build one team game
+
+ Weeks 9–15 are one project: a mobile game your team publishes in week 15. Every weekly assignment adds one system to it.
+
+ 
+    8–9 GDD · repo · mobile UI
+
+    10 enemy AI
+
+    11 content · saving
+
+    12 sound
+
+    13 visual effects
+
+    14–15 ads · release · store
+
+
+
+
+  9.  The core loop
+
+ 
+   
+     The core loop is the thing the player repeats every 30 seconds. If it is fun, the game works. If it is not, nothing else saves it.
+    Write it as 3–4 verbs in a circle.
+
+     
+       Platformer 
+       Endless runner 
+       Puzzle 
+       Tower defense 
+    
+
+     
+
+  
+
+    
+     
+      
+     
+   
+
+
+
+
+  10.  A one-page GDD
+
+ 
+   
+     A game design document for a 6-week project fits on one or two pages. Its real job is to make the team agree
+     what you will NOT make .
+
+     
+       Template 
+       Example 
+    
+
+     
+        MVP:  what must be in the store build in week 15.
+
+        Cut list:  ideas you agree to drop. Writing them down stops arguments later.
+
+        2D or 3D  is the team's choice. In 3D the hero is a real rigged character, like in the midterm.
+
+     
+  
+
+   
+
+
+
+
+  11.  Team and roles
+
+  
+  Role  Owns 
+
+   Programming   player controller, game rules, saving, the build 
+
+   Game design and levels   core loop, levels, difficulty, balance numbers 
+
+   Graphics and animation   assets, animator controllers, visual style 
+
+   Sound and interface   music, effects, menus and HUD 
+
+   Release and promotion   store page, screenshots, video, privacy policy 
+
+ 
+
+  Everyone writes code.  Each student owns at least one system in code: a UI screen, an enemy, the save system.
+At the defense I ask you about your own code.
+
+
+  12.  Git and GitHub for a Unity team
+
+ Git keeps every version of the project and lets four people work at once without sending ZIP files around.
+
+ What goes into the repository
+
+ 
+   Assets/ your work 
+ Packages/ package list 
+
+   ProjectSettings/ project setup 
+ .gitignore the Unity template 
+
+   Library/ rebuilt by Unity 
+ Temp/ · Obj/ temporary 
+
+   Logs/ · UserSettings/ personal 
+ Builds/ · *.apk build output 
+
+
+
+ 
+    
+     
+     main 
+     
+     
+         
+        
+         
+     feature/main-menu · Aruzhan 
+     feature/hud · Dias 
+     PR merged 
+   
+
+   
+      Unity setup once:  Project Settings → Editor → Version Control Mode: Visible Meta Files; Asset Serialization: Force Text.
+
+      Create the repo with GitHub's Unity .gitignore.  Never commit Library.
+
+      One branch per task,  merged into main through a pull request.
+
+      One scene, one owner.  Two people editing the same scene = conflict. Work in prefabs.
+
+      Big files:  GitHub blocks files over 100 MB. Use Git LFS for large art and audio.
+
+   
+
+
+ 
+    Daily routine
+ Pull → create a branch → work → commit small → push → pull request → teammate reviews → merge.
+
+   GitHub Desktop is the easiest start. The command line works the same way.
+
+
+    Commit messages
+
+    ✓   Add pause panel and resume button   ✓   Fix HUD anchors for 20:9 phones  
+   ✗   fix  ·  ✗   asdf  ·  ✗   final final 2 
+
+
+
+
+
+  13.  Read more
+
+ 
+    Unity
+
+    Canvas Scaler  ·
+   Basic layout and anchors  ·
+   Auto layout  ·
+   Screen.safeArea  ·
+   Device Simulator  ·
+   Editor settings (Version Control)  ·
+   Smart Merge 
+
+
+    Git and design guidelines
+
+    Unity .gitignore  ·
+   Large files on GitHub  ·
+   Git LFS  ·
+   GitHub Desktop  ·
+   Material Design: structure  ·
+   Apple HIG: accessibility 
+
+
+
+
+
+  Next:  Assignment 8–9 — Team Game Kickoff: your team's GDD, the GitHub repository and your own mobile UI screen.
+
+ Game Development Fundamentals · Narxoz University · School of Digital Technologies · Tölebay Baglan 
+
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+CODE 1
+using UnityEngine;
+
+[RequireComponent(typeof(RectTransform))]
+public class SafeArea : MonoBehaviour
+{
+    RectTransform panel;
+    Rect last;
+
+    void Awake() { panel = GetComponent<RectTransform>(); Apply(); }
+    void Update() { if (Screen.safeArea != last) Apply(); }
+
+    void Apply()
+    {
+        last = Screen.safeArea;
+        Vector2 min = last.position;
+        Vector2 max = last.position + last.size;
+        min.x /= Screen.width;  min.y /= Screen.height;
+        max.x /= Screen.width;  max.y /= Screen.height;
+        panel.anchorMin = min;   // the panel's corners follow
+        panel.anchorMax = max;   // the visible part of the screen
+    }
+}
+
+CODE 2
+public GameObject pausePanel;
+
+public void SetPaused(bool paused)
+{
+    pausePanel.SetActive(paused);
+    Time.timeScale = paused ? 0f : 1f;   // physics and Update movement stop
+}
+
+public void ToMenu() { Time.timeScale = 1f; SceneManager.LoadScene("MainMenu"); }
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lecture 10. Enemy AI (interactive).html
+SHA256: 3A415560B6592105CF566E92140F517F42F5D0A5CED6F49394BD689193D0818E
+ 
+ 
+ 
+ Enemies That Think 
+ 
+ 
+
+
+ 
+ 
+   
+     Game Development Fundamentals · Week 10 · Lecture
+
+     ENEMY AI . 
+
+     Three enemies, three state machines. Walk into their sight, read the red warning, step aside.
+    The diagram under the level lights up the state the selected enemy is in right now.
+
+     
+       Unity 6 · FSM · Raycast · NavMesh 
+       Assignment 10:  Three Enemy Types  · 12.5 points 
+    
+
+  
+
+   
+       
+
+     
+       View 
+       
+         Show vision rays 
+         Pause 
+      
+
+       State machine 
+       
+           Patroller 
+           Shooter 
+           Charger 
+      
+
+    
+
+       
+
+      Hits taken: 0  · drag inside the level, or click it and use WASD / arrow keys. Red ring, laser or dashed lane = an attack is coming.
+
+  
+
+ 
+
+  1.  What enemy AI is
+
+ Enemy AI in a mobile game is a small set of rules that picks one behaviour at a time: walk the route, chase, aim, hit.
+Simple rules are enough. The player must be able to  read it  and  beat it .
+
+ 
+    1 · Sense
+ What does the enemy know this frame? Distance to the player, the angle, walls in between.
+
+
+    2 · Decide
+ Which state is it in, and does a rule say "switch now"? That is the state machine.
+
+
+    3 · Act
+ Move, turn, aim or attack. Next frame it starts again at Sense.
+
+
+
+
+ 
+    Readable:  every state looks different. The demo uses a text label; your game uses animation, color and sound.
+
+    Beatable:  every attack has a warning before it and a gap after it.
+
+    Consistent:  the same situation gives the same reaction. Players can learn rules. They cannot learn dice.
+
+ 
+
+  2.  Finite state machine
+
+ A finite state machine (FSM) is a list of  states  plus  transitions  between them.
+The enemy is in exactly one state. Every frame it runs that state's code and checks the  conditions  on its arrows.
+
+  
+       
+    
+    sees player 
+    not seen 2 s 
+    closer than 1.2 m 
+    strike + 0.4 s rest 
+    Patrol 
+    Chase 
+    Attack 
+ 
+
+  enum  State { Patrol, Chase, Attack }
+State state;   float  timer;                  // timer = seconds in the current state 
+[SerializeField]  float  attackRange = 1.2f, loseTime = 2f, windUp = 0.5f;
+ void  Update()
+{
+    timer += Time.deltaTime;
+     switch  (state)
+    {
+         case  State.Patrol:
+            Patrol();
+             if  (CanSeePlayer()) SetState(State.Chase);
+             break ;
+         case  State.Chase:
+             if  (CanSeePlayer()) timer = 0f;    // here timer = time since last seen 
+            MoveTo(player.position);
+             if  (DistanceToPlayer() < attackRange) SetState(State.Attack);
+             else if  (timer > loseTime) SetState(State.Patrol);
+             break ;
+         case  State.Attack:                   // stands still: this is the warning 
+             if  (timer >= windUp) { Strike(); SetState(State.Chase); }
+             break ;
+    }
+}
+
+ void  SetState(State next) { state = next; timer = 0f; }    // enter logic lives here 
+
+ 
+    One enum value per state.   State state;  starts as  Patrol , the first value of the enum.
+
+    Change state only in  SetState .  It resets the timer, so "0.5 s in Attack" counts from the moment of entry. Animation triggers, sounds and the debug label go there too.
+
+    Every state needs a way out:  a condition or a timer. A state with no exit is a frozen enemy.
+
+ 
+
+  3.  Seeing the player
+
+ The enemy sees the player only when three checks pass, in this order. The cheap checks go first, so most frames stop before the raycast.
+
+ 
+    1 · Distance
+
+     
+       
+       
+         
+       4 m ✓  8 m ✗ 
+     
+      toPlayer.magnitude > viewRange  → not seen. One subtraction, almost free.
+
+
+    2 · Angle
+
+     
+       
+        
+        
+       ✓  ✗ behind  fov 90° 
+     
+      Vector3.Angle(transform.forward, toPlayer) < fov / 2 . A 90° cone means 45° to each side.
+
+
+    3 · Walls
+
+     
+       
+         
+       
+        
+       wall on the ray ✗ 
+     
+      Physics.Raycast  toward the player with a Walls mask. Any hit means blocked. The most expensive check, so it runs last.
+
+
+
+
+ [SerializeField] Transform player;
+[SerializeField]  float  viewRange = 6f, fov = 90f;
+[SerializeField] LayerMask obstacleMask;               // tick only the Walls layer 
+
+ bool  CanSeePlayer()
+{
+    Vector3 eye = transform.position + Vector3.up;       // 1 m above the feet 
+    Vector3 toPlayer = player.position + Vector3.up - eye;
+
+     // 1. distance 
+     if  (toPlayer.magnitude > viewRange)  return false ;
+     // 2. angle: inside the cone? 
+     if  (Vector3.Angle(transform.forward, toPlayer) > fov / 2f)  return false ;
+     // 3. walls: does the ray hit anything on obstacleMask before the player? 
+     if  (Physics.Raycast(eye, toPlayer.normalized,  out  RaycastHit hit,
+                        toPlayer.magnitude, obstacleMask))
+         return false ;                                   // hit.collider is the wall 
+
+     return true ;
+}
+
+  // 2D game: the same three checks with Vector2 and Physics2D 
+Vector2 toPlayer = player.position - transform.position;
+ if  (toPlayer.magnitude > viewRange)  return false ;
+ if  (Vector2.Angle(transform.right, toPlayer) > fov / 2f)  return false ;    // sprite that faces right 
+RaycastHit2D hit = Physics2D.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude, obstacleMask);
+ return  hit.collider ==  null ;
+
+  LayerMask:  put every wall on a  Walls  layer and tick only Walls in  obstacleMask .
+Now the ray ignores the enemy's own collider, other enemies and the player. In 2D this matters most: a ray that starts inside the enemy's own collider can hit it
+(Physics 2D setting  Queries Start In Colliders ), and the enemy never sees anyone.
+
+
+  4.  Moving
+
+ 2D: walk between waypoints you place by hand. 3D: bake a NavMesh and let the agent find a path around the walls.
+
+ 
+   
+     2D · waypoints
+
+     Place empty GameObjects along the route and drag them into the array. They must sit in the level, not inside the enemy, or they move with it.
+
+ [SerializeField] Transform[] points;
+[SerializeField]  float  speed = 1.7f;            // m/s 
+ int  i;
+
+ void  Patrol()
+{
+    Vector2 target = points[i].position;
+    transform.position = Vector2.MoveTowards(
+        transform.position, target, speed * Time.deltaTime);
+     if  (Vector2.Distance(transform.position, target) < 0.05f)
+        i = (i + 1) % points.Length;           // next point, loop to 0 
+}
+
+     If the enemy has a Rigidbody2D, move it with  rb.MovePosition(...)  in  FixedUpdate  instead of setting  transform.position .
+
+  
+
+   
+     3D · NavMesh (AI Navigation package)
+
+     
+       Install  AI Navigation  in the Package Manager if the project does not have it.
+
+       Select the floor →  Add Component → Navigation → NavMesh Surface  → click  Bake . A blue overlay in the Scene view marks where agents can walk.
+
+       Enemy →  Add Component → Navigation → NavMesh Agent . Set Speed, Stopping Distance and Radius.
+
+       Moved a wall? Click  Bake  again.
+
+     
+  
+
+
+
+  using  UnityEngine;
+ using  UnityEngine.AI;
+
+[RequireComponent( typeof (NavMeshAgent))]
+ public class  ChaseMover : MonoBehaviour
+{
+    [SerializeField] Transform target;
+    [SerializeField]  float  chaseSpeed = 3f, attackRange = 1.2f;    // player runs at 4 m/s 
+    NavMeshAgent agent;
+     float  repath;                                    // seconds until the next path 
+     void  Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = chaseSpeed;
+        agent.stoppingDistance = attackRange;           // stop where the attack starts 
+    }
+
+     void  Update()
+    {
+        repath -= Time.deltaTime;
+         if  (repath > 0f)  return ;
+        repath = 0.2f;                                  // a new path 5 times per second 
+        agent.SetDestination(target.position);
+    }
+}
+
+  2D games:  the built-in NavMesh is baked from 3D geometry. A 2D game on the XY plane gets no NavMesh out of the box. Use waypoints, or a grid of walkable cells.
+
+
+  5.  Fair attacks
+
+ A fair attack has three parts: a  warning , the  strike , and a  gap  where the player can hit back.
+Players accept a hit they saw coming. They quit after a hit they could not see.
+
+  
+   WIND-UP 0.3–0.8 s 
+   STRIKE 
+   RECOVERY 
+   
+   
+   
+   
+   
+   cooldown 1–2 s 
+   color + animation + sound 
+   enemy stands still: hit back 
+   
+   ≈ 0.25 s: the player notices and reacts 
+   
+   
+   0  0.5 s 
+   1.0 s  1.5 s 
+ 
+
+ 
+    Wind-up 0.3–0.8 s.  Change color, play a wind-up animation and a sound. A player needs roughly 0.25 s just to notice and react, so anything shorter feels like a cheap shot.
+
+    The strike only hits if the player is still in reach.  Moving away during the wind-up must work.
+
+    Always leave a counter window.  After the strike the enemy stands still or is stunned for 0.4–1 s. That is the player's turn.
+
+    Never attack from off-screen.  An enemy outside the camera view walks into view first, then winds up.
+
+    Cooldown 1–2 s  before the same enemy attacks again.
+
+ 
+
+  6.  Three archetypes
+
+ Three enemies are interesting when each one tests a different skill. These are the three in the demo, with the numbers it uses.
+In your game they can be a guard, a slime and a bull. Keep the behaviour, change the look.
+
+  
+    Enemy  Behaviour  States  Tests the player's  3 numbers to tune 
+
+     Patroller   Walks a route. Chases what it sees. Short melee hit.  Patrol → Chase → Attack   Positioning:  stay out of the cone, use walls as cover  view range 6 m · chase speed 3 m/s (player 4) · wind-up 0.5 s 
+
+     Shooter   Keeps about 5 m away. Aims with a laser, fires a slow shot.  Idle → Keep distance → Aim → Cooldown   Reaction:  step aside when the laser appears  aim time 0.6 s · shot speed 5 m/s · cooldown 1.5 s 
+
+     Charger   Waits. Winds up, dashes in a straight line, gets stunned.  Idle → Wind-up → Dash → Stunned   Timing:  sidestep at the end of the wind-up, punish the stun  trigger range 6 m · wind-up 0.7 s · stun 1 s 
+
+ 
+
+
+  7.  Difficulty and playtesting
+
+ Target: a  new player beats the level in 2–4 tries . You cannot judge this yourself: you know every enemy by heart. Only a playtest tells you.
+
+  
+   
+   
+   
+   1 try 
+   2–4 tries · target 
+   5+ tries 
+   too easy 
+   player learns the enemies, then wins 
+   feels unfair 
+ 
+
+ 
+   
+      Hand the phone to someone new  and say only "play". Watch silently: no hints, no explaining.
+
+      Count the tries  until they beat the level.
+
+      Mark each death on a sketch of the level.  Five deaths in one spot point at one enemy and one number.
+
+      Change one number at a time,  then test again. Two changes at once and you never know which one worked.
+
+      Write down every change:  old value → new value, tries before → after.
+
+   
+    
+      Change  Why  Tries 
+
+      Charger wind-up 0.4 → 0.7 s  5 of 6 deaths were the dash  6 → 3 
+
+      Shooter cooldown 1.0 → 1.5 s  no time to leave cover  5 → 3 
+
+      Patroller view range 6 → 7 m  beaten first try, never spotted  1 → 2 
+
+    Example tuning log. Numbers made up for this lecture.
+
+
+
+
+
+  8.  Debugging AI
+
+ An AI bug looks like "the enemy does nothing" and gives no error. Draw what the enemy senses and print what it decides, and the bug becomes visible.
+
+ 
+  void  OnDrawGizmosSelected()    // draws when the enemy is selected 
+{
+    Gizmos.color = Color.yellow;
+    Gizmos.DrawWireSphere(transform.position, viewRange);
+
+    Vector3 left  = Quaternion.Euler(0f, -fov / 2f, 0f) * transform.forward;
+    Vector3 right = Quaternion.Euler(0f,  fov / 2f, 0f) * transform.forward;
+    Gizmos.color = Color.cyan;
+    Gizmos.DrawRay(transform.position, left * viewRange);
+    Gizmos.DrawRay(transform.position, right * viewRange);
+}
+ // 2D: Quaternion.Euler(0f, 0f, ±fov / 2f) * transform.right 
+
+   
+      Gizmos  show range and cone in the Scene view while you tune.  OnDrawGizmosSelected  draws only for the selected enemy, so ten enemies do not turn into a mess.
+
+       Debug.DrawRay   draws the sight ray for one frame: green = sees, red = blocked. In the Game view it shows only with the Gizmos button on.
+
+      State label:  a TextMesh Pro 3D text (not the UI one) as a child above the enemy. You read the state in Play mode, on the phone too. Hide it in the release build.
+
+   
+
+
+  using  TMPro;                                      // top of the file 
+[SerializeField] TMP_Text stateLabel;             // the 3D text above the head 
+
+ void  SetState(State next)
+{
+    state = next;
+    timer = 0f;
+    stateLabel.text = next.ToString();            // "Patrol", "Chase", "Attack" 
+}
+
+ void  LateUpdate()
+{
+    stateLabel.transform.rotation = Camera.main.transform.rotation;    // 3D: face the camera 
+     bool  sees = CanSeePlayer();
+    Debug.DrawRay(transform.position, player.position - transform.position,
+                  sees ? Color.green : Color.red);
+}
+
+
+  9.  Working with an agent
+
+ From this week AI chats and AI agents (Claude Code, Codex, Cursor…) are allowed. You lead, the agent helps.
+Every assignment includes a  decision log  of 3–5 lines: what you asked, what the agent got wrong, what you changed and why.
+At the end-of-term defense you explain any part of your code. Cannot explain it → 0.
+
+ 
+    Let the agent scaffold
+
+     The  enum  +  switch  skeleton with  SetState  ·  CanSeePlayer()  with the three checks · gizmos and the state label · the waypoint mover or NavMeshAgent setup.
+
+
+    You decide
+
+     Which three enemies fit your game and which skill each one tests · every number: ranges, speeds, wind-ups, cooldowns · what the warning looks and sounds like · when the difficulty is right, after a playtest.
+
+
+
+
+  
+    Typical agent mistake  What you do 
+
+     GameObject.Find("Player")  or  FindObjectOfType  inside  Update , and a sight raycast every frame for every enemy  Get the player once: a  [SerializeField]  reference, or  FindFirstObjectByType  in  Awake .  FindObjectOfType  is obsolete in Unity 6. Check sight every 0.1–0.2 s with a timer. 
+
+    Raycast without a LayerMask: the ray hits the enemy's own collider or another enemy  Walls layer +  obstacleMask  with only Walls ticked. 
+
+    States with no exit, or the timer never reset: stuck in Chase forever, Attack fires every frame  Every state has a condition or a timer out. Change state only through  SetState , which resets the timer. 
+
+    Attack with no wind-up: damage on the same frame the player comes close  Add a 0.3–0.8 s wind-up with color + sound, then a recovery gap. 
+
+    Magic numbers:  if (d < 1.2f)  buried in the code   [SerializeField]  fields with units in a comment. Tune them in the Inspector during the playtest. 
+
+ 
+
+  Decision log · two example lines
+
+   Asked Claude Code for a Shooter FSM. It fired on the same frame it saw me, with no warning. I added a 0.6 s Aim state with a red laser line; playtest tries went from 6 to 3.
+
+   The agent called  GameObject.Find("Player")  in  Update  on every enemy. I replaced it with a  [SerializeField]  reference set once in the Inspector.
+
+
+
+  10.  Read more
+
+ 
+    Seeing the player
+
+    Physics.Raycast  ·
+   Physics2D.Raycast  ·
+   Vector3.Angle  ·
+   Vector2.Angle  ·
+   LayerMask  ·
+   Layers  ·
+   Physics2D.queriesStartInColliders  ·
+   FindFirstObjectByType 
+
+
+    Moving and debugging
+
+    AI Navigation manual  ·
+   Create a NavMesh  ·
+   NavMesh Surface  ·
+   NavMesh Agent  ·
+   NavMeshAgent.SetDestination  ·
+   Vector2.MoveTowards  ·
+   OnDrawGizmosSelected  ·
+   Gizmos  ·
+   Debug.DrawRay  ·
+   TextMesh Pro 3D text 
+
+
+
+
+
+  Next:  Assignment 10 — Three Enemy Types. Three enemies with different behaviour in your own game, beaten by a new player in 2–4 tries.
+
+ Game Development Fundamentals · Narxoz University · School of Digital Technologies · Tölebay Baglan 
+
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+CODE 1
+enum State { Patrol, Chase, Attack }
+State state;  float timer;                 // timer = seconds in the current state
+[SerializeField] float attackRange = 1.2f, loseTime = 2f, windUp = 0.5f;
+void Update()
+{
+    timer += Time.deltaTime;
+    switch (state)
+    {
+        case State.Patrol:
+            Patrol();
+            if (CanSeePlayer()) SetState(State.Chase);
+            break;
+        case State.Chase:
+            if (CanSeePlayer()) timer = 0f;   // here timer = time since last seen
+            MoveTo(player.position);
+            if (DistanceToPlayer() < attackRange) SetState(State.Attack);
+            else if (timer > loseTime) SetState(State.Patrol);
+            break;
+        case State.Attack:                  // stands still: this is the warning
+            if (timer >= windUp) { Strike(); SetState(State.Chase); }
+            break;
+    }
+}
+
+void SetState(State next) { state = next; timer = 0f; }   // enter logic lives here
+
+CODE 2
+[SerializeField] Transform player;
+[SerializeField] float viewRange = 6f, fov = 90f;
+[SerializeField] LayerMask obstacleMask;              // tick only the Walls layer
+
+bool CanSeePlayer()
+{
+    Vector3 eye = transform.position + Vector3.up;      // 1 m above the feet
+    Vector3 toPlayer = player.position + Vector3.up - eye;
+
+    // 1. distance
+    if (toPlayer.magnitude > viewRange) return false;
+    // 2. angle: inside the cone?
+    if (Vector3.Angle(transform.forward, toPlayer) > fov / 2f) return false;
+    // 3. walls: does the ray hit anything on obstacleMask before the player?
+    if (Physics.Raycast(eye, toPlayer.normalized, out RaycastHit hit,
+                        toPlayer.magnitude, obstacleMask))
+        return false;                                  // hit.collider is the wall
+
+    return true;
+}
+
+CODE 3
+// 2D game: the same three checks with Vector2 and Physics2D
+Vector2 toPlayer = player.position - transform.position;
+if (toPlayer.magnitude > viewRange) return false;
+if (Vector2.Angle(transform.right, toPlayer) > fov / 2f) return false;   // sprite that faces right
+RaycastHit2D hit = Physics2D.Raycast(transform.position, toPlayer.normalized, toPlayer.magnitude, obstacleMask);
+return hit.collider == null;
+
+CODE 4
+[SerializeField] Transform[] points;
+[SerializeField] float speed = 1.7f;           // m/s
+int i;
+
+void Patrol()
+{
+    Vector2 target = points[i].position;
+    transform.position = Vector2.MoveTowards(
+        transform.position, target, speed * Time.deltaTime);
+    if (Vector2.Distance(transform.position, target) < 0.05f)
+        i = (i + 1) % points.Length;          // next point, loop to 0
+}
+
+CODE 5
+using UnityEngine;
+using UnityEngine.AI;
+
+[RequireComponent(typeof(NavMeshAgent))]
+public class ChaseMover : MonoBehaviour
+{
+    [SerializeField] Transform target;
+    [SerializeField] float chaseSpeed = 3f, attackRange = 1.2f;   // player runs at 4 m/s
+    NavMeshAgent agent;
+    float repath;                                   // seconds until the next path
+    void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = chaseSpeed;
+        agent.stoppingDistance = attackRange;          // stop where the attack starts
+    }
+
+    void Update()
+    {
+        repath -= Time.deltaTime;
+        if (repath > 0f) return;
+        repath = 0.2f;                                 // a new path 5 times per second
+        agent.SetDestination(target.position);
+    }
+}
+
+CODE 6
+void OnDrawGizmosSelected()   // draws when the enemy is selected
+{
+    Gizmos.color = Color.yellow;
+    Gizmos.DrawWireSphere(transform.position, viewRange);
+
+    Vector3 left  = Quaternion.Euler(0f, -fov / 2f, 0f) * transform.forward;
+    Vector3 right = Quaternion.Euler(0f,  fov / 2f, 0f) * transform.forward;
+    Gizmos.color = Color.cyan;
+    Gizmos.DrawRay(transform.position, left * viewRange);
+    Gizmos.DrawRay(transform.position, right * viewRange);
+}
+// 2D: Quaternion.Euler(0f, 0f, ±fov / 2f) * transform.right
+
+CODE 7
+using TMPro;                                     // top of the file
+[SerializeField] TMP_Text stateLabel;            // the 3D text above the head
+
+void SetState(State next)
+{
+    state = next;
+    timer = 0f;
+    stateLabel.text = next.ToString();           // "Patrol", "Chase", "Attack"
+}
+
+void LateUpdate()
+{
+    stateLabel.transform.rotation = Camera.main.transform.rotation;   // 3D: face the camera
+    bool sees = CanSeePlayer();
+    Debug.DrawRay(transform.position, player.position - transform.position,
+                  sees ? Color.green : Color.red);
+}
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lecture 11. Data and Saves (interactive).html
+SHA256: 1FE44FD50AD6B991BEEB7198BF0ED90A55207A4D17EE5D5BD622CAD4CC71ED6D
+ 
+ 
+ 
+ Data-Driven Games 
+ 
+ 
+
+
+ 
+ 
+   
+     Game Development Fundamentals · Week 11 · Lecture
+
+     DATA + SAVES . 
+
+     Your game gets content and memory. Balance numbers move out of code into data assets. The player's progress goes into a file that survives closing the app.
+
+     
+       Unity 6 · ScriptableObject · JSON · PlayerPrefs 
+       Assignment 11:  Data and Saves  · 12.5 points 
+    
+
+  
+
+   
+     
+       
+           EnemyStats  (Enemy Stats) 
+
+          Script   EnemyStats  
+
+          Speed   2.5 
+
+          Max HP   3 
+
+          Damage   1 
+
+          Vision Range   4.0 
+
+          Wind Up Time   0.6 
+
+      
+
+         
+
+    
+
+     
+       LevelData 
+       
+         Level_01 
+         Level_02 
+         Level_03 
+      
+
+    
+
+     
+
+  
+
+ 
+
+  Part A  Game data · ScriptableObjects
+
+
+  1.  Magic numbers
+
+ A magic number is a value typed straight into code:  speed = 3.5f . One enemy speed easily ends up in six scripts.
+To make enemies 20% faster, someone has to find all six, change them, recompile and hope none was missed.
+
+ 
+   
+     Where speed lives 
+     
+       6 scripts, 6 numbers 
+       1 EnemyStats asset 
+    
+
+     Designer asks 
+     
+       Make enemies 20% faster 
+       Reset 
+    
+
+  
+
+   
+
+   
+
+
+
+ 
+    Designers do not edit C#.  Balancing means 30–50 small tries. If every try needs a programmer and a recompile, nobody tries.
+
+    You cannot compare.  Level 1 numbers and level 3 numbers sit in different files, so the difficulty curve is invisible.
+
+    Rule for Assignment 11:  no balance number lives in a script. Speed, HP, damage, timers, counts and rewards go into data assets.
+
+ 
+
+  2.  ScriptableObject: a data asset
+
+ A ScriptableObject is a data asset: a file in the Project window, like a material or a prefab.
+You fill in its numbers in the Inspector. Scripts read them.
+
+  using  UnityEngine;
+
+[CreateAssetMenu(fileName = "EnemyStats", menuName = "Game/Enemy Stats")]
+ public class  EnemyStats : ScriptableObject
+{
+     public float  speed = 2.5f;         // units per second 
+     public int  maxHP = 3;
+     public int  damage = 1;
+     public float  visionRange = 4f;    // units 
+    [Range(0.1f, 2f)]
+     public float  windUpTime = 0.6f;   // warning before a hit 
+}
+
+ 
+   
+      Fields:  public fields, or private fields with  [SerializeField] , show up in the Inspector and are saved in the asset.
+
+      Create the asset:  Assets → Create → Game → Enemy Stats. The same menu opens with a right-click in the Project window.
+
+      One asset per enemy type:   Slime_Stats ,  Bat_Stats ,  Boss_Stats . Same script, different numbers.
+
+      Connect it:  drag the asset into the  Stats  field of the enemy prefab.
+
+   
+    
+         
+     
+     Slime_Stats.asset 
+     speed 2.5 · maxHP 3 
+     
+          
+     
+          
+     
+       Slime · hp 3  Slime · hp 1 
+       Slime · hp 2  Slime · hp 3 
+     
+     1 asset, 4 enemies. Current HP lives on each enemy. 
+   
+
+
+
+  using  UnityEngine;
+
+ public class  Enemy : MonoBehaviour
+{
+    [SerializeField] EnemyStats stats;   // drag Slime_Stats here 
+     int  hp;                              // current HP lives on THIS enemy 
+
+     void  Start() { hp = stats.maxHP; }
+
+     void  MoveTo(Vector3 target)
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position, target, stats.speed * Time.deltaTime);
+    }
+
+     public void  TakeHit( int  amount)
+    {
+        hp -= amount;                     // never stats.maxHP -= amount 
+         if  (hp <= 0) Destroy(gameObject);
+    }
+}
+
+  A ScriptableObject is not a save system.  In the Editor, values you change on the asset in Play Mode stay in it after you press Stop.
+That is handy for tuning: commit the asset to Git. In a build, runtime changes live only in memory, and every launch starts again from the values you shipped.
+The player's progress goes into a save file (Part B).
+
+
+  3.  Data-driven levels
+
+ A level is data too: which enemies, how many, where they spawn, how long the player has and what the goal is.
+Put that into a  LevelData  asset. One  LevelLoader  script builds any level from it.
+
+  using  System.Collections.Generic;
+ using  UnityEngine;
+
+ public enum  Goal { ReachExit, CollectStars, Survive }
+
+[System.Serializable]
+ public class  Wave
+{
+     public  GameObject enemyPrefab;   // its EnemyStats is set on the prefab 
+     public int  count = 3;
+     public float  delay = 2f;         // seconds before this wave 
+}
+
+[CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
+ public class  LevelData : ScriptableObject
+{
+     public float  timeLimit = 60f;
+     public  Goal goal = Goal.ReachExit;
+     public int  goalAmount = 5;       // stars to collect 
+     public  Vector2[] spawnPoints;
+     public  List<Wave> waves =  new ();
+}
+
+  
+       
+   
+      Level_01.asset  2 enemies · 60 s · exit 
+      Level_02.asset  3 enemies · 45 s · 5 stars 
+      Level_03.asset  4 enemies · 30 s · survive 
+      LevelLoader  reads one asset 
+      Game scene  1 scene, 3 levels 
+     menu sets levelIndex 
+   
+   
+        
+   
+ 
+
+  using  System.Collections;
+ using  UnityEngine;
+
+ public class  LevelLoader : MonoBehaviour
+{
+    [SerializeField] LevelData[] levels;   // Level_01, Level_02, Level_03 
+    [SerializeField] GameTimer timer;      // your own HUD timer script 
+
+    IEnumerator Start()
+    {
+        LevelData level = levels[GameSession.levelIndex];   // set by the menu 
+        timer.Begin(level.timeLimit);
+
+         foreach  (Wave wave  in  level.waves)
+        {
+             yield return new  WaitForSeconds(wave.delay);
+             for  ( int  i = 0; i < wave.count; i++)
+            {
+                Vector2 p = level.spawnPoints[i % level.spawnPoints.Length];
+                Instantiate(wave.enemyPrefab, p, Quaternion.identity);
+            }
+        }
+    }
+}
+
+ The menu remembers the choice in a static field:  public static class GameSession { public static int levelIndex; } .
+The hero demo at the top works the same way: switch the LevelData and the same code builds a different level.
+
+  
+  Lives in data (assets)  Lives in code (scripts) 
+
+  Enemy speed, HP, damage, vision range, wind-up time  How an enemy patrols, chases and attacks (week 10) 
+
+  Number of enemies, waves, delays, spawn points  How to spawn a wave and wait between waves 
+
+  Time limit, goal type, goal amount  How the timer counts and checks the goal 
+
+  Which enemy type appears in which level  Win and lose rules, scene loading 
+
+  Rewards, unlock order, prices  Saving, loading, UI 
+
+ 
+
+
+  Part B  Player data · saving on the phone
+
+
+  4.  Saving: PlayerPrefs vs a JSON file
+
+ Game data ships inside the build. Player data is born on the phone: best score, unlocked levels, volume.
+Unity gives you two simple places to keep it. Use both, each for its own job.
+
+  
+    PlayerPrefs  JSON file 
+
+   Use it for   Small settings: volume, vibration, language  Progress: best score, unlocked levels, coins, stars 
+
+   Holds   Single int, float or string values, one per key  A whole  SaveData  object, lists included 
+
+   On Android    shared_prefs/…playerprefs.xml    Android/data/<package>/files/save.json  
+
+   Debugging   Hard to see  Open the file and read it 
+
+   Format changes   Key by key  One  version  field 
+
+   Protection   None, plain text  None, plain text 
+
+ 
+
+ 
+  using  System.Collections.Generic;
+
+[System.Serializable]
+ public class  SaveData
+{
+     public int  version = 1;    // raise on format change 
+     public int  bestScore;
+     public  List< int > unlockedLevels =  new ();
+}
+
+   
+     save.json after two cleared levels:
+
+ {
+    "version": 1,
+    "bestScore": 1480,
+    "unlockedLevels": [
+        1,
+        2,
+        3
+    ]
+}
+
+  
+
+
+
+  using  System.IO;
+ using  UnityEngine;
+
+ public static class  SaveSystem
+{
+     static string  FilePath =>
+        Path.Combine(Application.persistentDataPath, "save.json");
+
+     public static void  Save(SaveData data)
+    {
+         string  json = JsonUtility.ToJson(data,  true );   // true = readable, with line breaks 
+        File.WriteAllText(FilePath, json);
+    }
+}
+
+ 
+   
+     Settings go to PlayerPrefs:
+
+ PlayerPrefs.SetFloat("volume", 0.8f);
+PlayerPrefs.SetInt("vibration", 1);
+PlayerPrefs.Save();    // write to disk now 
+
+ // returns 1f if the key does not exist yet 
+ float  v = PlayerPrefs.GetFloat("volume", 1f);
+
+  
+
+   
+      persistentDataPath  is a folder that survives app updates. On Android it points to the app's own  files  folder. Never write into  Assets/  or a  C:\  path.
+
+      JsonUtility saves fields only.  No properties, no Dictionary. Use  List  and small  [System.Serializable]  classes.
+
+   
+
+
+
+  5.  Loading safely
+
+ On a real phone the save file can be missing (first launch, after a reset) or broken (the battery died while the game was writing).
+Load has to survive both and still start the game.
+
+ 
+  public static  SaveData Load()
+{
+     if  (!File.Exists(FilePath))  return new  SaveData();
+
+     try 
+    {
+         string  json = File.ReadAllText(FilePath);
+         var  data = JsonUtility.FromJson<SaveData>(json);
+         return  data ??  new  SaveData();  // empty → null 
+    }
+     catch  (System.Exception e)
+    {
+        Debug.LogWarning("Broken save: " + e.Message);
+         return new  SaveData();
+    }
+}
+
+   
+      Missing file:   File.Exists  is false on the first launch and after a reset. Return defaults.
+
+      Broken file:   FromJson  throws an exception.  catch  returns defaults, and the game still starts.
+
+      Empty file:   FromJson  returns  null  for empty text.  ??  turns it into defaults.
+
+      Log it:   Debug.LogWarning  shows in the Console and in Android Logcat, so you find out.
+
+   
+
+
+  Safer writing:  write the new save into  save.tmp  first, then replace the old file.
+If the battery dies during step 1, only  save.tmp  is broken.  save.json  still holds the last good save.
+
+  public static void  Save(SaveData data)
+{
+     string  tmp = Path.Combine(Application.persistentDataPath, "save.tmp");
+    File.WriteAllText(tmp, JsonUtility.ToJson(data,  true ));   // 1. write a full new copy 
+
+     if  (File.Exists(FilePath))
+        File.Replace(tmp, FilePath,  null );   // 2. swap it in, no backup file 
+     else 
+        File.Move(tmp, FilePath);           // very first save 
+}
+
+ 
+   
+     
+         
+
+
+
+       
+         Play level (+score) 
+         Save 
+         Close app 
+         Open app 
+         Corrupt the save file 
+      
+
+       
+         Safe loading (try/catch + defaults): ON 
+      
+
+    
+
+     
+       
+          persistentDataPath/save.json  OK 
+
+         
+
+      
+
+       
+
+       
+
+    
+
+  
+
+   Try: Play → Close app → Open app. Then Play → Save → Corrupt → Close → Open, once with safe loading OFF and once ON.
+
+
+
+
+  6.  When to save on mobile
+
+ Phones do not close apps politely. The player presses Home, takes a call or switches apps.
+Later the OS kills the app in the background to free memory, and your code gets no warning. Save at the moments when you still have control.
+
+  
+   
+   
+   
+      ✓ 
+      ✓ 
+      ✓ 
+     
+      ✗ 
+     
+       Level complete  Volume changed  Home button, call 
+       In background  OS kills the app 
+     
+     
+       SaveSystem.Save()  PlayerPrefs.Save() 
+       OnApplicationPause(true)  → SaveSystem.Save() 
+       your code is frozen  no callback at all 
+     
+   
+ 
+
+ 
+  public class  SaveManager : MonoBehaviour
+{
+     public  SaveData Data {  get ;  private set ; }
+
+     void  Awake() { Data = SaveSystem.Load(); }
+
+     public void  LevelCompleted( int  level,  int  score)
+    {
+        Data.bestScore = Mathf.Max(Data.bestScore, score);
+         if  (!Data.unlockedLevels.Contains(level + 1))
+            Data.unlockedLevels.Add(level + 1);
+        SaveSystem.Save(Data);                // moment 1 
+    }
+
+     public void  ResetToDefaults() => Data =  new  SaveData();
+
+     void  OnApplicationPause( bool  paused)
+    {
+         if  (paused) SaveSystem.Save(Data);    // moment 3 
+    }
+}
+
+   
+      1. After a level is completed.  The win screen is a calm moment: save there.
+
+      2. When settings change.   PlayerPrefs.Save()  when the player closes the settings panel.
+
+      3. In  OnApplicationPause(true) .  Unity calls it when the app goes to the background. It may be the last code that ever runs.
+
+      Do not rely on  OnApplicationQuit .  Unity's docs say it is not called when iOS suspends the app, and the OS may kill a suspended app without it. They also suggest  OnApplicationFocus(false) ; saving a small file twice does no harm.
+
+      Never save in  Update .  That writes the file again on every single frame.
+
+   
+
+
+
+  7.  Reset progress
+
+ Players want to start over, and you need it for testing. One tap must never wipe progress, so the button opens an in-game confirm panel first.
+Build it with uGUI in the style of your game.
+
+ 
+   
+       
+       SETTINGS
+
+       
+
+       Reset progress 
+       
+         
+           Delete all progress? 
+            
+            Cancel  Delete 
+
+        
+
+      
+
+    
+
+
+
+      Play a little (refill progress) 
+
+     
+
+  
+
+  using  UnityEngine;
+ using  UnityEngine.SceneManagement;
+
+ public class  ResetProgress : MonoBehaviour
+{
+    [SerializeField] GameObject confirmPanel;  // hidden 
+    [SerializeField] SaveManager saveManager;
+
+     public void  AskReset() => confirmPanel.SetActive( true );
+     public void  Cancel() => confirmPanel.SetActive( false );
+
+     public void  ConfirmReset()
+    {
+        SaveSystem.Delete();             // save.json gone 
+        PlayerPrefs.DeleteKey("volume");
+        PlayerPrefs.DeleteKey("vibration");
+        PlayerPrefs.Save();
+        saveManager.ResetToDefaults();   // clear RAM too 
+         var  scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
+    }
+}
+
+
+
+ 
+    The panel covers the whole screen  with a dark Image (Raycast Target on), so taps cannot reach the buttons behind it.
+
+    Say what will be lost:  "Best score 1480 and levels 1–3 will be deleted." Delete is red. Cancel changes nothing.
+
+    Clear all three places:  the file ( if (File.Exists(FilePath)) File.Delete(FilePath); ), your PlayerPrefs keys and the  SaveData  in RAM. If RAM keeps the old data, the next  OnApplicationPause  writes it back.
+
+    Delete your own keys by name.   PlayerPrefs.DeleteAll()  also removes keys that packages may keep there.
+
+ 
+
+  8.  Working with an agent
+
+ From week 10, AI chats and AI agents (Claude Code, Codex, Cursor…) are allowed. You lead, the agent helps.
+Agents write save systems fast, and they also copy mistakes from old tutorials.
+
+ 
+    Let the agent scaffold
+
+     
+        EnemyStats  and  LevelData  classes with  [CreateAssetMenu] 
+
+        SaveData  and the  SaveSystem  Save / Load / Delete methods
+
+       The  LevelLoader  wave loop
+
+       Wiring of the confirm panel buttons
+
+     
+
+    You decide
+
+     
+       Which numbers are balance data, and their values in all three levels
+
+       What goes into  SaveData , and its version number
+
+       The moments when your game saves
+
+       What the player sees when the save file is broken
+
+     
+
+
+
+ Typical agent mistakes on this topic
+
+ 
+    BinaryFormatter.  Old tutorials use it. Microsoft says it is insecure, cannot be made secure, and apps should stop using it. Use  JsonUtility .
+
+    Dictionary or properties in SaveData.   JsonUtility  saves serializable fields only: a  Dictionary  or a  { get; set; }  property silently disappears from the file. Use a  List .
+
+    Runtime state inside a ScriptableObject.   stats.maxHP -= damage  hurts every enemy that shares the asset, and in the Editor the change stays after Play Mode.
+
+    No try/catch on load.  One broken file and the game never starts again until the player reinstalls it.
+
+    Saving only in  OnApplicationQuit .  On a phone it may never run.
+
+    Hard-coded paths.   "C:/Users/me/save.json"  or  "Assets/save.json"  work on your PC only. Use  Path.Combine(Application.persistentDataPath, "save.json") .
+
+ 
+ Decision log: two example lines
+
+ 
+   Asked Codex for a save system. It used BinaryFormatter. I switched to JsonUtility + save.json: Microsoft marks BinaryFormatter as insecure, and I can open a JSON file to debug.
+
+   Claude Code put currentHP into EnemyStats and subtracted damage from it, so one hit damaged every slime. I moved hp into Enemy.cs; the asset keeps only maxHP.
+
+
+
+  Every assignment has a decision log:  3–5 lines on what you asked the agent, what it got wrong, what you changed and why.
+At the end-of-term defense you explain any part of your code. Cannot explain it → 0 for that part.
+
+
+  9.  Read more
+
+ 
+    Unity · game data
+
+    ScriptableObject data assets  ·
+   ScriptableObject API  ·
+   CreateAssetMenuAttribute  ·
+   Serialization rules  ·
+   JSON serialization  ·
+   JsonUtility 
+
+
+    Saving on the device
+
+    Application.persistentDataPath  ·
+   PlayerPrefs  ·
+   MonoBehaviour.OnApplicationPause  ·
+   MonoBehaviour.OnApplicationQuit  ·
+   File.Replace (.NET)  ·
+   BinaryFormatter security guide (Microsoft) 
+
+
+
+
+
+  Next:  Assignment 11 — Data and Saves. All balance numbers in ScriptableObjects, three levels from data, progress that survives closing the app on a phone.
+
+ Game Development Fundamentals · Narxoz University · School of Digital Technologies · Tölebay Baglan 
+
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+CODE 1
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "EnemyStats", menuName = "Game/Enemy Stats")]
+public class EnemyStats : ScriptableObject
+{
+    public float speed = 2.5f;        // units per second
+    public int maxHP = 3;
+    public int damage = 1;
+    public float visionRange = 4f;   // units
+    [Range(0.1f, 2f)]
+    public float windUpTime = 0.6f;  // warning before a hit
+}
+
+CODE 2
+using UnityEngine;
+
+public class Enemy : MonoBehaviour
+{
+    [SerializeField] EnemyStats stats;  // drag Slime_Stats here
+    int hp;                             // current HP lives on THIS enemy
+
+    void Start() { hp = stats.maxHP; }
+
+    void MoveTo(Vector3 target)
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position, target, stats.speed * Time.deltaTime);
+    }
+
+    public void TakeHit(int amount)
+    {
+        hp -= amount;                    // never stats.maxHP -= amount
+        if (hp <= 0) Destroy(gameObject);
+    }
+}
+
+CODE 3
+using System.Collections.Generic;
+using UnityEngine;
+
+public enum Goal { ReachExit, CollectStars, Survive }
+
+[System.Serializable]
+public class Wave
+{
+    public GameObject enemyPrefab;  // its EnemyStats is set on the prefab
+    public int count = 3;
+    public float delay = 2f;        // seconds before this wave
+}
+
+[CreateAssetMenu(fileName = "LevelData", menuName = "Game/Level Data")]
+public class LevelData : ScriptableObject
+{
+    public float timeLimit = 60f;
+    public Goal goal = Goal.ReachExit;
+    public int goalAmount = 5;      // stars to collect
+    public Vector2[] spawnPoints;
+    public List<Wave> waves = new();
+}
+
+CODE 4
+using System.Collections;
+using UnityEngine;
+
+public class LevelLoader : MonoBehaviour
+{
+    [SerializeField] LevelData[] levels;  // Level_01, Level_02, Level_03
+    [SerializeField] GameTimer timer;     // your own HUD timer script
+
+    IEnumerator Start()
+    {
+        LevelData level = levels[GameSession.levelIndex];  // set by the menu
+        timer.Begin(level.timeLimit);
+
+        foreach (Wave wave in level.waves)
+        {
+            yield return new WaitForSeconds(wave.delay);
+            for (int i = 0; i < wave.count; i++)
+            {
+                Vector2 p = level.spawnPoints[i % level.spawnPoints.Length];
+                Instantiate(wave.enemyPrefab, p, Quaternion.identity);
+            }
+        }
+    }
+}
+
+CODE 5
+using System.Collections.Generic;
+
+[System.Serializable]
+public class SaveData
+{
+    public int version = 1;   // raise on format change
+    public int bestScore;
+    public List<int> unlockedLevels = new();
+}
+
+CODE 6
+{
+    "version": 1,
+    "bestScore": 1480,
+    "unlockedLevels": [
+        1,
+        2,
+        3
+    ]
+}
+
+CODE 7
+using System.IO;
+using UnityEngine;
+
+public static class SaveSystem
+{
+    static string FilePath =>
+        Path.Combine(Application.persistentDataPath, "save.json");
+
+    public static void Save(SaveData data)
+    {
+        string json = JsonUtility.ToJson(data, true);  // true = readable, with line breaks
+        File.WriteAllText(FilePath, json);
+    }
+}
+
+CODE 8
+PlayerPrefs.SetFloat("volume", 0.8f);
+PlayerPrefs.SetInt("vibration", 1);
+PlayerPrefs.Save();   // write to disk now
+
+// returns 1f if the key does not exist yet
+float v = PlayerPrefs.GetFloat("volume", 1f);
+
+CODE 9
+public static SaveData Load()
+{
+    if (!File.Exists(FilePath)) return new SaveData();
+
+    try
+    {
+        string json = File.ReadAllText(FilePath);
+        var data = JsonUtility.FromJson<SaveData>(json);
+        return data ?? new SaveData(); // empty → null
+    }
+    catch (System.Exception e)
+    {
+        Debug.LogWarning("Broken save: " + e.Message);
+        return new SaveData();
+    }
+}
+
+CODE 10
+public static void Save(SaveData data)
+{
+    string tmp = Path.Combine(Application.persistentDataPath, "save.tmp");
+    File.WriteAllText(tmp, JsonUtility.ToJson(data, true));  // 1. write a full new copy
+
+    if (File.Exists(FilePath))
+        File.Replace(tmp, FilePath, null);  // 2. swap it in, no backup file
+    else
+        File.Move(tmp, FilePath);          // very first save
+}
+
+CODE 11
+
+
+CODE 12
+public class SaveManager : MonoBehaviour
+{
+    public SaveData Data { get; private set; }
+
+    void Awake() { Data = SaveSystem.Load(); }
+
+    public void LevelCompleted(int level, int score)
+    {
+        Data.bestScore = Mathf.Max(Data.bestScore, score);
+        if (!Data.unlockedLevels.Contains(level + 1))
+            Data.unlockedLevels.Add(level + 1);
+        SaveSystem.Save(Data);               // moment 1
+    }
+
+    public void ResetToDefaults() => Data = new SaveData();
+
+    void OnApplicationPause(bool paused)
+    {
+        if (paused) SaveSystem.Save(Data);   // moment 3
+    }
+}
+
+CODE 13
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class ResetProgress : MonoBehaviour
+{
+    [SerializeField] GameObject confirmPanel; // hidden
+    [SerializeField] SaveManager saveManager;
+
+    public void AskReset() => confirmPanel.SetActive(true);
+    public void Cancel() => confirmPanel.SetActive(false);
+
+    public void ConfirmReset()
+    {
+        SaveSystem.Delete();            // save.json gone
+        PlayerPrefs.DeleteKey("volume");
+        PlayerPrefs.DeleteKey("vibration");
+        PlayerPrefs.Save();
+        saveManager.ResetToDefaults();  // clear RAM too
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.buildIndex);
+    }
+}
+
+============================================================
+SOURCE: C:\Users\Noutstorekz\Downloads\Telegram Desktop\Lecture 12. Game Audio (interactive).html
+SHA256: 8615482020136CC31F952A537BD0C80E1A9C48A1BFE91E76C9891EF1362DA898
+ 
+ 
+ 
+ Game Audio Mix 
+ 
+ 
+
+
+ 
+ 
+   
+     Game Development Fundamentals · Week 12 · Lecture
+
+     SOUND . 
+
+     Sound tells the player what just happened and what is about to hit them.
+    This week your game gets a sound for every action, two music tracks and a mixer with volume settings.
+
+     
+       Unity 6 · AudioSource · AudioMixer · Snapshots 
+       Assignment 12:  Sound Pass  · 12.5 points 
+    
+
+     Every sound on this page is made live in your browser. No audio files.
+
+  
+
+   
+     
+       Audio Mixer ·  GameMix  
+       ▶ Start audio 
+    
+
+     
+
+     
+       Play SFX 
+       
+         Jump 
+         Hit 
+         Pickup 
+         Enemy wind-up 
+         Hit ×5 
+      
+
+       Variation 
+       
+         Off 
+         Random pitch ±8% 
+         Pitch + 3 clips 
+      
+
+       Music 
+       
+         Crossfade to Level 
+         Menu      Level      
+      
+
+       Pause 
+       
+         Normal 
+         Paused 
+      
+
+    
+
+     
+
+  
+
+ 
+
+  1.  Why sound matters
+
+ Mute any good mobile game and it suddenly feels broken. Sound does three jobs at once.
+
+ 
+    Feedback
+ Every tap, jump and pickup answers back. The player knows the action worked without looking at the HUD.
+
+
+    Warning
+ The enemy wind-up starts about half a second before the attack. The player reacts to an enemy that is still off-screen.
+
+
+    Feel
+ A light rising jump, a heavy low hit, a bright pickup. Sound gives every action its weight.
+
+
+
+
+  Rule for this week:  every player action and every enemy attack has a sound.
+
+ Start with a sound list
+
+  
+  Event  Sound  Group 
+
+  Jump  short rising blip  SFX 
+
+  Land  soft thud, quieter than the jump  SFX 
+
+  Collect an apple  bright two-note chime  SFX 
+
+  Take damage  hit + short low tone  SFX 
+
+  Falling rock (enemy attack)  rumble that starts 0.5 s before the rock falls  SFX 
+
+  Button tap  click  UI 
+
+  Menu · slope  calm loop · faster loop  Music 
+
+ 
+
+ Example: Barys Run from the week 9 GDD. Write this list for your own game before you search for a single sound.
+
+
+  2.  AudioSource and AudioListener
+
+ The  AudioListener  is the ear. An  AudioSource  is a speaker on an object.
+A scene has exactly one ear and as many speakers as you need.
+
+ 
+    
+         
+     
+        Main Camera  AudioListener · the ear 
+        Player  2D · PlayOneShot 
+        Enemy  3D in a 3D game 
+        MusicManager  2 sources · Loop 
+        UI buttons  2D · click 
+     
+     
+          
+     
+   
+
+    
+      AudioSource field  Use 
+
+      Audio Resource  the clip it plays (Unity 6 name for the clip field) 
+
+      Output  its mixer group: SFX, UI or music (section 3) 
+
+      Play On Awake  off: your scripts decide when 
+
+      Loop  on for music, off for effects 
+
+      Pitch  1 = normal speed and pitch 
+
+      Spatial Blend  0 = 2D, same volume everywhere · 1 = 3D, quieter far from the listener 
+
+   
+
+
+
+ 
+    One AudioListener per scene.  Unity puts it on the Main Camera. When you add a second camera, remove its listener.
+
+     PlayOneShot(clip)  for short effects.  It layers: a new hit does not cut the one still ringing. One AudioSource per object is enough for all its effects.
+
+     Play()  for music and loops.  It plays the clip in Audio Resource.
+
+    2D game:  Spatial Blend 0 everywhere.  3D game:  enemy sources 1, so far enemies sound quieter. Player, UI and music stay 0.
+
+ 
+  using  UnityEngine;
+
+ public class  PlayerSfx : MonoBehaviour
+{
+     public  AudioSource sfx;           // on the player · Output = SFX · Spatial Blend 0 
+     public  AudioClip jump, land, hurt;
+
+     // call these from your player controller 
+     public void  OnJump() => sfx.PlayOneShot(jump);
+     public void  OnLand() => sfx.PlayOneShot(land, 0.6f);    // 60% volume 
+     public void  OnHurt() => sfx.PlayOneShot(hurt);
+}
+
+
+  3.  AudioMixer: one knob per group
+
+ The Audio Mixer is a set of volume knobs for groups of sounds. Your settings menu moves three of them:
+ Master ,  Music  and  SFX .
+
+ 
+    
+         
+     
+        Master  MasterVol 
+        Music  MusicVol 
+        SFX  SFXVol 
+        UI  follows Master 
+        Tracks  pause effect 
+     
+     
+          
+     
+     
+       ↑ player, enemies 
+       ↑ buttons 
+       ← MusicManager's 2 sources 
+       sound flows up to Master 
+     
+   
+
+   
+     Open the Audio Mixer window and press  +  in the Mixers panel. The new mixer already has a Master group.
+
+     Right-click Master →  Add child group : Music, SFX, UI. Right-click Music → Add child group: Tracks.
+
+     On every AudioSource set  Output  to its group. Prefabs too.
+
+     Select the Music group. In the Inspector right-click  Volume  →  Expose … to script .
+
+     Open  Exposed Parameters  (top right of the mixer window) and rename it  MusicVol . Same for Master and SFX.
+
+   
+
+
+
+ From slider to decibels
+
+ A mixer fader works in decibels (dB):  0 dB  is full volume,  −80 dB  is silence. A UI slider gives 0 to 1.
+The ear hears volume in ratios, so convert with  Log10 : 1 → 0 dB, 0.5 → −6 dB, 0.1 → −20 dB, 0.0001 → −80 dB.
+Drag the slider and compare the two lines.
+
+ 
+   
+     Music slider 
+     
+     SetFloat gets 
+     
+       Log10(v) × 20 
+       v × 80 − 80 (linear) 
+    
+
+  
+
+     
+
+   
+
+   
+
+   Press ▶ Start audio at the top first: this slider moves the Music fader up there, so you hear both mappings.
+
+
+
+  using  UnityEngine;
+ using  UnityEngine.Audio;
+ using  UnityEngine.UI;
+
+ public class  VolumeSlider : MonoBehaviour
+{
+     public  AudioMixer mixer;
+     public string  param = "MusicVol";    // the exposed parameter name 
+     public  Slider slider;                // Min Value 0.0001, Max Value 1 
+
+     void  Start()                         // not Awake: SetFloat needs Start or later 
+    {
+        slider.value = PlayerPrefs.GetFloat(param, 0.8f);
+        slider.onValueChanged.AddListener(Set);
+        Set(slider.value);
+    }
+
+     void  Set( float  value)
+    {
+        mixer.SetFloat(param, Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
+        PlayerPrefs.SetFloat(param, value);    // remembered on the next launch 
+    }
+}
+
+ 
+    Why 0.0001?   Log10(0)  is minus infinity.  Mathf.Max  keeps the value at 0.0001, which is exactly −80 dB.
+
+    Save it.  PlayerPrefs is enough for three numbers. If your week 11 save system has a settings part, keep the volumes there instead.
+
+    Apply at launch.  A hidden settings panel runs  Start  only when it opens. Apply the saved volumes once when the game starts too, for example in the MusicManager.
+
+ 
+
+  4.  Snapshots: the pause sound
+
+ A snapshot saves the state of the whole mixer. Switch to another snapshot and Unity slides every value to it.
+Classic use: in the pause menu the music goes muffled and quieter, as if it plays behind a door. Try  Pause → Paused  in the mixer at the top.
+
+ 
+   
+     In the Snapshots panel press  +  and name it  Paused . Name the first snapshot  Normal , right-click it →  Set as Start Snapshot .
+
+     Select the Tracks group, press  Add..  at the bottom of its strip, pick  Lowpass Simple . It cuts the high sounds above its Cutoff freq.
+
+     Select each snapshot and set Tracks to the values in the table.
+
+   
+    
+      Tracks group  Normal  Paused 
+
+      Volume  0 dB  −6 dB 
+
+      Lowpass Simple · Cutoff freq  22000 Hz  800 Hz 
+
+   
+
+
+
+  using  UnityEngine;
+ using  UnityEngine.Audio;
+
+ public class  PauseAudio : MonoBehaviour
+{
+     public  AudioMixer mixer;
+     public  AudioMixerSnapshot normalSnapshot, pausedSnapshot;
+
+     void  Start()
+    {
+         // pause sets Time.timeScale = 0: let snapshot transitions run on real time 
+        mixer.updateMode = AudioMixerUpdateMode.UnscaledTime;
+    }
+
+     // call it from your SetPaused(bool) of week 8 
+     public void  SetPaused( bool  isPaused)
+    {
+         if  (isPaused) pausedSnapshot.TransitionTo(0.3f);    // 0.3 s slide 
+         else  normalSnapshot.TransitionTo(0.3f);
+    }
+}
+
+  Why a separate Tracks group?  After  SetFloat("MusicVol", …)  snapshots can no longer move the Music volume: the script owns it.
+So the settings slider lives on Music, and the pause effect lives on its child Tracks.
+
+ A mixer in Normal update mode follows scaled game time. With  Time.timeScale = 0  the transition would stall, so the script sets Unscaled Time.
+
+
+  5.  Music: two tracks and a crossfade
+
+ Two tracks: a calm one for the menu, a faster one for the level. Switch with a  1 s crossfade :
+the new track fades in while the old one fades out. Try  Crossfade to Level  at the top.
+
+ 
+    
+      
+      1  0 
+     0 s  0.5 s  1 s 
+     time  volume  
+     
+     
+     Menu fades out 
+     Level fades in 
+   
+
+   
+      Seamless loop:  the end of the file flows into its start. Cut it on a bar line, no silence at either end. Listen to the seam 5 times.
+
+      Import WAV or OGG.  MP3 files often start with a few milliseconds of silence, which you hear as a gap at every loop.
+
+      Two AudioSources  on the manager: Loop on, Play On Awake off, Output = Tracks.
+
+      Music sits under the effects.  Start with the Music group at −10 dB and adjust on the phone speaker.
+
+   
+
+
+ The manager survives scene loads with  DontDestroyOnLoad . When a scene that contains another copy loads again, the copy destroys itself.
+
+  using  System.Collections;
+ using  UnityEngine;
+
+ public class  MusicManager : MonoBehaviour
+{
+     public static  MusicManager Instance;
+     public  AudioSource a, b;    // Loop on · Play On Awake off · Output = Tracks 
+    AudioSource current;
+
+     void  Awake()
+    {
+         if  (Instance !=  null ) { Destroy(gameObject);  return ; }    // the copy from a reloaded scene 
+        Instance =  this ; current = a;
+        DontDestroyOnLoad(gameObject);    // works on a root object only 
+    }
+
+     public void  Play(AudioClip clip,  float  fade = 1f)
+    {
+         if  (current.clip == clip && current.isPlaying)  return ;    // same track keeps playing 
+        AudioSource next = current == a ? b : a;
+        next.clip = clip; next.volume = 0f; next.Play();
+        StopAllCoroutines(); StartCoroutine(Crossfade(current, next, fade));
+        current = next;
+    }
+
+      // MusicManager, continued 
+    IEnumerator Crossfade(AudioSource from, AudioSource to,  float  time)
+    {
+         for  ( float  t = 0f; t < 1f; t += Time.unscaledDeltaTime / time)
+        {
+            from.volume = 1f - t;
+            to.volume = t;
+             yield return null ;
+        }
+        from.Stop(); to.volume = 1f;
+    }
+}
+
+ // SceneMusic.cs · one per scene: the menu gets the menu track, levels the level track 
+ public class  SceneMusic : MonoBehaviour
+{
+     public  AudioClip track;
+     void  Start() => MusicManager.Instance.Play(track);
+}
+
+ Retry reloads the level: the second manager destroys itself in Awake, and  Play  returns early because the same clip is already playing. The music never restarts.
+
+
+  6.  Variation: no machine gun
+
+ The same hit at the same pitch five times in a row sounds like a machine gun: the ear catches the exact repeat.
+Two small changes fix it:  random pitch 0.92–1.08  (±8%) and  2–3 versions  of each sound.
+Press  Hit ×5  at the top with Variation Off, then with Pitch + 3 clips.
+
+  using  UnityEngine;
+
+ public class  SfxPlayer : MonoBehaviour
+{
+     public  AudioSource source;    // one per object · Output = SFX 
+     public  AudioClip[] hits;      // 2–3 versions of the same hit 
+     int  last = -1;
+
+     public void  PlayHit()
+    {
+         int  i = Random.Range(0, hits.Length);                      // int version: max is excluded 
+         if  (i == last && hits.Length > 1) i = (i + 1) % hits.Length;    // never the same clip twice 
+        last = i;
+        source.pitch = Random.Range(0.92f, 1.08f);                 // ±8% 
+        source.PlayOneShot(hits[i]);
+    }
+}
+
+ Same result without code: Unity 6 has the  Audio Random Container  asset. It holds a list of clips with Playback Mode (Sequential, Shuffle, Random),
+Volume and Pitch randomization and Avoid Repeating Last. Put it in the AudioSource's Audio Resource; with Trigger set to Manual each  Play()  picks a clip.
+
+
+  7.  Mobile import settings
+
+ Click a clip in the Project window and its import settings open in the Inspector. Phones have little memory,
+so short effects and long music get different settings. The Inspector shows the file size, check it after each change.
+
+  
+  Setting  Short SFX: jump, hit, pickup  Music: menu, level 
+
+  Force To Mono  On  Off (keep stereo) 
+
+  Load Type  Decompress On Load  Streaming 
+
+  Compression Format  ADPCM  Vorbis 
+
+  Quality  not used by ADPCM  lower it step by step until you hear a loss, then raise it a little 
+
+  Why  ready at once, plays many times. Unity suggests ADPCM for noisy repeated sounds like impacts and footsteps.  read from disk while it plays, minimal memory. Each streaming clip costs about 200 KB. 
+
+ 
+
+ Select all your SFX clips at once to change them together. Platform tabs (Android, iOS) can override the Default tab.
+
+
+  8.  Where to get sounds, and licenses
+
+ Make your own, or take free sounds with a clear license. Write down every source when you add it, not at the end of the week.
+
+ 
+    Make: jfxr
+ A sound effect generator in the browser. Presets: Pickup/coin, Jump, Hit/hurt, Laser/shoot, Explosion, Powerup, Blip/select.
+  Tweak the sliders, export WAV. The sounds you make are yours, also for commercial games.
+
+    jfxr.frozenfractal.com 
+
+
+    Take: Kenney
+ Free audio packs. Kenney's assets are public domain (CC0): use them in any game, credit is optional.
+
+    Kenney audio packs  ·  license 
+
+
+    Search: Freesound
+ A huge library of recorded sounds and loops from many authors. Every sound has its own license: read it on the sound's page before you download.
+
+    freesound.org  ·  license FAQ 
+
+
+
+
+ 
+   
+       CC0 :  no credit needed. Credit it in the README anyway.
+
+       CC BY :  you must credit the author and the license.
+
+      CC BY-NC (NonCommercial):  skip it. A store game with ads earns money.
+
+      No clear license  (a video rip, a random website): do not use it.
+
+   
+  ## Sounds and music (README.md) 
+jump.wav, hit_1-3.wav   made in jfxr, own work
+ui_click.ogg            Kenney, <pack name>, CC0
+menu_loop.ogg           "<title>" by <author>,
+                        <link to the sound page>,
+                        CC BY 4.0
+
+
+
+
+  9.  Working with an agent
+
+ AI chats and AI agents (Claude Code, Codex, Cursor) are allowed. You lead, the agent helps.
+Audio code is short, so agents write it fast and wrong in quiet ways: it compiles and still sounds bad. Listen after every change.
+
+ 
+    Let the agent scaffold
+
+   
+     The MusicManager: one instance, two sources, crossfade coroutine.
+
+     The VolumeSlider: Log10 conversion, PlayerPrefs.
+
+     An SfxPlayer with clip arrays and random pitch.
+
+     A list of every AudioSource in your scenes and prefabs with its Output group.
+
+   
+
+    You decide
+
+   
+     The sound list: which event gets which sound, how each enemy warns before it attacks.
+
+     The mix: how loud music sits under the effects. Judge it on the phone speaker.
+
+     The two tracks and the moment the music changes.
+
+     Every source and its license in the README.
+
+   
+
+
+
+ Typical agent mistakes
+
+  
+  Mistake  What you notice  Fix 
+
+  Linear volume on the mixer:  SetFloat("MusicVol", value)  or  value * 80 - 80   the slider does nothing, or its whole bottom half sounds silent   Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f  
+
+  AudioSources not routed to mixer groups  the SFX slider leaves some sounds at full volume  set Output on every AudioSource and prefab 
+
+  A new AudioSource for every shot:  AddComponent<AudioSource>()  or  AudioSource.PlayClipAtPoint   objects pile up in the Hierarchy, the sounds skip your mixer  one AudioSource per object +  PlayOneShot  
+
+  Two music managers after a scene reload  two tracks on top of each other after Retry  Instance check in Awake,  DontDestroyOnLoad  on a root object 
+
+  Music restarted on every level load  the level track jumps back to its start on every Retry  return early when the same clip is already playing 
+
+  All sounds at the same pitch  machine-gun hits and footsteps  pitch 0.92–1.08 and 2–3 clips per action 
+
+ 
+
+  Decision log: two example lines
+
+ 
+   1. Asked Claude Code for a music volume slider. It passed the 0–1 value straight to SetFloat, so the slider did nothing. Changed it to Log10 × 20 with Min Value 0.0001; now 0.5 gives −6 dB.
+
+   2. The agent's MusicManager had no duplicate check: after Retry two level tracks played. Added the Instance check in Awake and the same-clip check in Play.
+
+
+
+
+  Every assignment has a decision log  of 3–5 lines: what you asked the agent, what it got wrong, what you changed and why.
+At the end-of-term defense you explain any part of your code. Cannot explain → 0.
+
+
+  10.  Read more
+
+ 
+    Unity 6 Manual
+
+    Audio Mixer  ·
+   Audio Mixer overview  ·
+   Audio Mixer window  ·
+   AudioGroup Inspector and exposed parameters  ·
+   Audio Source component  ·
+   Audio Listener  ·
+   AudioClip import settings  ·
+   LowPass Simple effect  ·
+   Audio Random Container 
+
+
+    Unity 6 Scripting API
+
+    AudioSource  ·
+   AudioSource.PlayOneShot  ·
+   AudioSource.spatialBlend  ·
+   AudioMixer.SetFloat  ·
+   AudioMixerSnapshot.TransitionTo  ·
+   AudioMixer.updateMode  ·
+   Mathf.Log10  ·
+   Object.DontDestroyOnLoad  ·
+   PlayerPrefs.SetFloat  ·
+   Random.Range 
+
+
+
+
+
+  Next:  Assignment 12 — Sound Pass. Every action and every enemy attack has a sound, two music tracks, a mixer with saved volume settings.
+
+ Game Development Fundamentals · Narxoz University · School of Digital Technologies · Tölebay Baglan 
+
+
+
+
+
+
+ORIGINAL FORMATTED CODE BLOCKS
+
+CODE 1
+using UnityEngine;
+
+public class PlayerSfx : MonoBehaviour
+{
+    public AudioSource sfx;          // on the player · Output = SFX · Spatial Blend 0
+    public AudioClip jump, land, hurt;
+
+    // call these from your player controller
+    public void OnJump() => sfx.PlayOneShot(jump);
+    public void OnLand() => sfx.PlayOneShot(land, 0.6f);   // 60% volume
+    public void OnHurt() => sfx.PlayOneShot(hurt);
+}
+
+CODE 2
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UI;
+
+public class VolumeSlider : MonoBehaviour
+{
+    public AudioMixer mixer;
+    public string param = "MusicVol";   // the exposed parameter name
+    public Slider slider;               // Min Value 0.0001, Max Value 1
+
+    void Start()                        // not Awake: SetFloat needs Start or later
+    {
+        slider.value = PlayerPrefs.GetFloat(param, 0.8f);
+        slider.onValueChanged.AddListener(Set);
+        Set(slider.value);
+    }
+
+    void Set(float value)
+    {
+        mixer.SetFloat(param, Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
+        PlayerPrefs.SetFloat(param, value);   // remembered on the next launch
+    }
+}
+
+CODE 3
+using UnityEngine;
+using UnityEngine.Audio;
+
+public class PauseAudio : MonoBehaviour
+{
+    public AudioMixer mixer;
+    public AudioMixerSnapshot normalSnapshot, pausedSnapshot;
+
+    void Start()
+    {
+        // pause sets Time.timeScale = 0: let snapshot transitions run on real time
+        mixer.updateMode = AudioMixerUpdateMode.UnscaledTime;
+    }
+
+    // call it from your SetPaused(bool) of week 8
+    public void SetPaused(bool isPaused)
+    {
+        if (isPaused) pausedSnapshot.TransitionTo(0.3f);   // 0.3 s slide
+        else normalSnapshot.TransitionTo(0.3f);
+    }
+}
+
+CODE 4
+using System.Collections;
+using UnityEngine;
+
+public class MusicManager : MonoBehaviour
+{
+    public static MusicManager Instance;
+    public AudioSource a, b;   // Loop on · Play On Awake off · Output = Tracks
+    AudioSource current;
+
+    void Awake()
+    {
+        if (Instance != null) { Destroy(gameObject); return; }   // the copy from a reloaded scene
+        Instance = this; current = a;
+        DontDestroyOnLoad(gameObject);   // works on a root object only
+    }
+
+    public void Play(AudioClip clip, float fade = 1f)
+    {
+        if (current.clip == clip && current.isPlaying) return;   // same track keeps playing
+        AudioSource next = current == a ? b : a;
+        next.clip = clip; next.volume = 0f; next.Play();
+        StopAllCoroutines(); StartCoroutine(Crossfade(current, next, fade));
+        current = next;
+    }
+
+CODE 5
+    // MusicManager, continued
+    IEnumerator Crossfade(AudioSource from, AudioSource to, float time)
+    {
+        for (float t = 0f; t < 1f; t += Time.unscaledDeltaTime / time)
+        {
+            from.volume = 1f - t;
+            to.volume = t;
+            yield return null;
+        }
+        from.Stop(); to.volume = 1f;
+    }
+}
+
+// SceneMusic.cs · one per scene: the menu gets the menu track, levels the level track
+public class SceneMusic : MonoBehaviour
+{
+    public AudioClip track;
+    void Start() => MusicManager.Instance.Play(track);
+}
+
+CODE 6
+using UnityEngine;
+
+public class SfxPlayer : MonoBehaviour
+{
+    public AudioSource source;   // one per object · Output = SFX
+    public AudioClip[] hits;     // 2–3 versions of the same hit
+    int last = -1;
+
+    public void PlayHit()
+    {
+        int i = Random.Range(0, hits.Length);                     // int version: max is excluded
+        if (i == last && hits.Length > 1) i = (i + 1) % hits.Length;   // never the same clip twice
+        last = i;
+        source.pitch = Random.Range(0.92f, 1.08f);                // ±8%
+        source.PlayOneShot(hits[i]);
+    }
+}
+
+CODE 7
+## Sounds and music (README.md)
+jump.wav, hit_1-3.wav   made in jfxr, own work
+ui_click.ogg            Kenney, <pack name>, CC0
+menu_loop.ogg           "<title>" by <author>,
+                        <link to the sound page>,
+                        CC BY 4.0

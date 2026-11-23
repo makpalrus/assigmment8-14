@@ -1,0 +1,41 @@
+Simplified project verification
+PASS Level 1: timer and player data configured in prefab
+PASS Level 1: Pause belongs to Input Actions
+PASS Level 2: timer and player data configured in prefab
+PASS Level 2: Pause belongs to Input Actions
+PASS Level 3: timer and player data configured in prefab
+PASS Level 3: Pause belongs to Input Actions
+PASS Direct AudioClip fields are all assigned
+PASS Bullet prefab has Rigidbody2D and trigger collider
+PASS Menu starts with Play
+PASS Broken save loads defaults: not json
+PASS Broken save loads defaults: {
+PASS Broken save loads defaults: {"version":99}
+PASS Broken save loads defaults: {"version":1,"unlockedLevels":null}
+PASS Inspector Play event opens level menu
+PASS Coroutine invincibility prevents repeated damage
+PASS Heart restores health but cannot exceed max HP
+PASS Pause Input Action reaches Player.OnPause
+PASS MusicVol slider updates mixer
+PASS SFXVol slider updates mixer
+PASS MasterVol slider updates mixer
+PASS Volume changes are saved in JSON
+PASS Pause action resumes; timer did not advance during pause
+PASS Coin score follows ItemStats
+PASS Level completion saved unlocked level
+PASS Patroller SetState resets timer directly
+PASS Charger SetState resets timer directly
+PASS Shooter SetState resets timer directly
+Bullet observation: alive=False, hp=2, initial=3, simulated=0,7237351
+PASS Rigidbody bullet trigger damages player once and destroys bullet
+PASS Bullet is destroyed by wall collider
+PASS Bullet lifetime uses Destroy(gameObject, lifetime)
+PASS Restart restores all three enemy prefabs
+PASS Restart keeps the current music source playing
+PASS No duplicate audio managers
+PASS Victory updates existing UI labels
+PASS Bird hazards use Inspector-assigned stats and components
+PASS Reset still requires in-game confirmation
+PASS Cancel reset preserves data
+PASS Reset returns to only level one unlocked
+Original player save restored

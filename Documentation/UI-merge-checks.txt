@@ -1,0 +1,30 @@
+Merged UI checks
+PASS Level 1: merged UI keeps level references
+PASS Level 1: all persistent button targets exist
+PASS Level 1: no missing scripts
+PASS Level 2: merged UI keeps level references
+PASS Level 2: all persistent button targets exist
+PASS Level 2: no missing scripts
+PASS Level 3: merged UI keeps level references
+PASS Level 3: all persistent button targets exist
+PASS Level 3: no missing scripts
+PASS Only Play is visible initially
+PASS Play opens merged level menu
+PASS Reset confirmation can be cancelled
+PASS Back closes level menu
+PASS Input Action pauses merged GameUI
+PASS Merged timer stops on pause
+PASS MusicVol survives UI merge
+PASS SFXVol survives UI merge
+PASS MasterVol survives UI merge
+PASS Resume button still works
+PASS LevelLoader spawns all three enemies without LevelBindings
+PASS Timer continues on level two
+PASS Restart button recreates level two
+PASS Third level still spawns birds
+PASS Completing three levels displays total score
+PASS Final score persists in JSON
+PASS Merged menu reflects saved unlocks
+PASS Merged reset returns to only level one
+Original save restored
+27 checks passed. Original save SHA256 matched backup. Temporary Editor helpers removed.

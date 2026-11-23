@@ -1,0 +1,37 @@
+Inspector migration checks
+PASS Audio prefab assigned mixer, snapshots, music and variants
+PASS Every sound has an assigned AudioClip
+PASS Four serialized AudioSources with mixer groups
+PASS Three LevelData resources assigned in Inspector
+PASS Level 1 player, camera, HUD and native heart Images assigned
+PASS Level 1 buttons wired in Inspector
+PASS Level 1 three volume sliders wired in Inspector
+PASS Level 2 player, camera, HUD and native heart Images assigned
+PASS Level 2 buttons wired in Inspector
+PASS Level 2 three volume sliders wired in Inspector
+PASS Level 3 player, camera, HUD and native heart Images assigned
+PASS Level 3 buttons wired in Inspector
+PASS Level 3 three volume sliders wired in Inspector
+PASS Single audio manager in menu
+PASS Only Play is shown initially
+PASS Inspector Play event opens level select
+PASS Three level buttons display native sprites
+PASS Reset opens confirmation
+PASS Cancel keeps progress
+PASS Heart sprites survive scene instantiation
+PASS Audio manager persists without duplicates
+PASS Inspector Pause event pauses game and SFX
+PASS MusicVol applies logarithmic volume
+PASS SFXVol applies logarithmic volume
+PASS MasterVol applies logarithmic volume
+PASS Changing volume writes JSON save
+PASS Resume restores gameplay and sound
+PASS Three enemy types use configured renderers and level references
+PASS Patroller receives level waypoints
+PASS Shooter uses an assigned projectile prefab
+PASS Level music plays through configured sources
+PASS Restart recreates three enemies without duplication
+PASS Result panel updates its existing Inspector labels
+PASS Birds use prefab graphics, rigidbodies and triggers
+PASS Menu return keeps one manager and resumes audio
+Original player save restored after checks

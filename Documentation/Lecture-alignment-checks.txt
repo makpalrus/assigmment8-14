@@ -1,0 +1,72 @@
+PASS asset migration completed
+PASS level data 1
+PASS wave prefabs 1
+PASS spawn points 1
+PASS level data 2
+PASS wave prefabs 2
+PASS spawn points 2
+PASS level data 3
+PASS wave prefabs 3
+PASS spawn points 3
+PASS mixer group Master
+PASS mixer group Music
+PASS mixer group Tracks
+PASS mixer group SFX
+PASS mixer group UI
+PASS TextMesh Pro resources
+PASS animation 8 FPS Assets/Animation/Player_Idle.anim
+PASS animation 8 FPS Assets/Animation/Player_Ran.anim
+PASS animation 8 FPS Assets/Animation/Player_Jump.anim
+PASS animation 8 FPS Assets/Animation/Player_Fall.anim
+PASS UI source routed separately
+PASS three damage sound variants
+PASS sound variation without immediate repeat 0
+PASS sound variation without immediate repeat 1
+PASS sound variation without immediate repeat 2
+PASS sound variation without immediate repeat 3
+PASS sound variation without immediate repeat 4
+PASS sound variation without immediate repeat 5
+PASS sound variation without immediate repeat 6
+PASS sound variation without immediate repeat 7
+PASS sound variation without immediate repeat 8
+PASS sound variation without immediate repeat 9
+PASS master volume saved in JSON
+PASS level select reads all unlocked levels
+PASS level two loads from selection
+PASS three enemy prefabs spawned by waves, actual 3
+PASS TMP state label Charger
+PASS TMP state label Shooter
+PASS TMP state label Patroller
+PASS sight sees player in isolated cone test
+PASS sight rejects player behind wall mask
+PASS sight rejects player behind enemy
+PASS Patroller resets state timer
+PASS patroller detects and chases
+PASS patroller enters warning before hit
+PASS patroller waits for wind-up
+PASS Patroller resets state timer
+PASS patroller remembers last seen position
+PASS patroller returns after losing sight
+PASS waypoints stay outside enemy hierarchy
+PASS Shooter resets state timer
+PASS shooter retreats to keep distance
+PASS Shooter resets state timer
+PASS shooter aim line and warning delay
+PASS shooter fires after aim then cools down
+PASS Charger resets state timer
+PASS charger warns before dash
+PASS charger waits for warning duration
+PASS charger dashes after warning
+PASS Charger resets state timer
+PASS charger leaves recovery window
+PASS pause and music
+PASS resume
+PASS best score saved after level without lowering existing record
+PASS level three prefab content
+PASS lower score preserves best
+PASS higher score updates best
+PASS broken save defaults
+PASS missing save defaults
+PASS reset clears RAM and progress
+PASS no game runtime errors
+PASS reset locks levels two and three

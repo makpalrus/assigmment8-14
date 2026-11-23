@@ -1,7 +1,0 @@
-Built-in ImageGen
-
-Button
-One reusable blank fantasy game UI button, isolated on transparent background, horizontal rounded rectangle with softly rounded corners, aspect ratio 3:1, thick warm honey-gold carved wooden rim and narrow cream inner edge, glossy apple-green face with subtle lime highlight at the top and deep green lower bevel, restrained shine near corners. Match a friendly painted woodland casual game interface. Front view, clean crisp high-resolution 2D cartoon asset, symmetric, center face kept plain and readable for text added later by Unity. Full object visible tightly framed with small transparent margin. NO text, letters, symbols, watermark, other objects or background.
-
-Panel
-One blank portrait fantasy casual game menu panel isolated on transparent background, aspect ratio 4:5, softly rounded rectangular parchment card with a thick dimensional honey-gold wooden frame, thin ivory inner rim, light warm cream paper interior. Friendly polished hand-painted 2D game UI for an enchanted forest game. Frame has restrained wood grain only at edges, center remains completely empty uniform pale warm cream for readable UI controls added later. Large smooth inner area, symmetrical front view, whole panel visible with modest transparent margin, soft small edge shadow. No header, no text, no buttons, no icons, no watermark, no backdrop.

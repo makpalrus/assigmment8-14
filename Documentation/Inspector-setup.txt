@@ -1,0 +1,27 @@
+Настройка Skybound через Inspector
+
+Объекты и ссылки подготовлены автоматически и сохранены в обычных сценах и префабах Unity. Это не ручное перетаскивание мышью. Теперь их можно смотреть и менять вручную, как на занятиях. Временные скрипты подготовки удалены из Assets.
+
+1. Меню: Assets/Scenes/MainMenu.unity.
+В Hierarchy раскрой Main Menu Canvas. PLAY, Level Select, три кнопки уровней и Confirm Reset уже существуют до Play Mode. На Button открой On Click: действия и звук назначены там.
+
+2. Игровой интерфейс: Assets/LevelLayouts/Level_1.prefab, Level_2.prefab, Level_3.prefab.
+Открой префаб двойным щелчком. В Mobile Interface находятся HUD, Pause Menu и Game Over. Чтобы редактировать скрытую панель, временно включи её в Inspector; перед сохранением снова выключи. Все тексты, сердца Image, фоны, кнопки и три Slider сохранены. На игровом интерфейсе назначен GameUI. На Slider назначены VolumeSlider и On Value Changed → Set(float). Оставлен маленький круглый регулятор.
+
+3. Звук: Assets/Prefabs/AudioManager.prefab.
+Music A / Music B / Effects / UI — заранее созданные AudioSource. На них назначены Output mixer groups. GameAudio хранит прямые поля AudioClip: Jump, Coin, Shoot и остальные звуки; каждый вызывается обычным методом PlayJump, PlayCoin или PlayShoot. MusicManager хранит два источника и время плавной смены. PauseAudio хранит Normal/Paused. SfxPlayer хранит три варианта урона.
+В MainMenu на объекте Main Menu Canvas находится SceneMusic с menu.wav; в Game на объекте с LevelLoader — SceneMusic с level.wav.
+Микшер: Assets/Resources/Audio/GameMix.mixer. Настройки громкости сохраняются в JSON, как разрешает лекция 12. Звуки — заранее подготовленные WAV, при запуске синтез звука не выполняется.
+
+4. Уровни: Assets/Scenes/Game.unity → LevelLoader → Levels.
+Три ссылки Level_01, Level_02, Level_03 назначены в Inspector. В Assets/Resources/Data меняются скорость, здоровье, награды, состав волн и задержки. В GameUI на layout-префабе назначены Player, View и Patrol Points. Таймер, панели, сердца и монеты находятся в том же GameUI. Точки патруля — отдельные объекты уровня.
+
+5. Враги: Assets/EnemyPrefabs.
+SpriteRenderer, состояние TextMesh Pro, линия стрелка и Projectile prefab уже подготовлены. Bird содержит Rigidbody2D и CircleCollider2D. Компоненты больше не добавляются при запуске. Игрок и камера связываются с созданным врагом загрузчиком, потому что префаб врага не может хранить ссылку на ещё не созданный экземпляр игрока другого префаба.
+
+6. Анимация: Assets/Animation и Animator игрока.
+Кадры и переходы находятся в клипах и Animator Controller. Код меняет параметры Speed/Grounded/VerticalSpeed и flipX. Кадры игрока — 8 FPS. У монет собственный Animator-клип. Создания кадров анимации кодом во время игры нет.
+
+Код остаётся для движения, состояний ИИ, реакции кнопок, загрузки префабов/волн, плавной смены музыки и сохранения JSON. Лекции тоже используют код для этих действий. Это соответствие учебным приёмам, а не утверждение, что весь исходник платформера дословно взят из лекций. Отличия и противоречия источников перечислены в Lecture-project-audit.txt.
+
+Проверки переноса: Inspector-setup-checks.txt. Сохранение пользователя восстановлено после проверок, SHA256 совпал. Проверки на физическом телефоне не выполнялись.

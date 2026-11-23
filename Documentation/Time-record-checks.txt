@@ -1,0 +1,21 @@
+Whole-run time record checks
+PASS Level 1 time labels assigned
+PASS Level 2 time labels assigned
+PASS Level 3 time labels assigned
+PASS Old coin score is ignored; progress and audio settings survive migration
+PASS No record displays a placeholder
+PASS Pause does not count towards run time
+PASS Completing level one does not save a time record
+PASS Total time carries over to level two
+PASS Restarting the current level keeps accumulated time
+PASS Completing level two does not save a time record
+PASS Completing 1-2-3 saves the first whole-run time
+PASS Victory shows YOUR TIME, best time and NEW RECORD
+PASS Slower result does not overwrite record
+PASS Equal result is not a new record
+PASS Faster result is saved to JSON
+PASS Menu displays the saved whole-run time
+PASS Starting directly at level three cannot set a record
+PASS Practice completion explains how to qualify for a record
+PASS Reset clears the time record
+Original save restored byte-for-byte
